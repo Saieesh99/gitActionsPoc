@@ -1,0 +1,36 @@
+name: Deploy to Dev
+
+on:
+  push:
+    branches: [ dev ]
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install boto3
+
+      - name: Configure AWS
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
+
+      - name: Deploy Lambda
+        run: bash deploy/deploy_lambda.sh dev
+
+      - name: Deploy Lex Bot
+        run: python deploy/deploy_lex.py --env dev
+
+      - name: Deploy Connect Flow
+        run: python deploy/deploy_connect.py --env dev
