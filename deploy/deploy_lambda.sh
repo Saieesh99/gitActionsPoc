@@ -6,7 +6,7 @@
 set -e  # Stop on any error
 
 ENV=$1
-FUNC_NAME="my-lex-lambda"
+FUNC_NAME="connect-lex-lambda"
 ZIP_FILE="lambda_${ENV}.zip"
 HANDLER="handler.lambda_handler"
 RUNTIME="python3.12"

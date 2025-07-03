@@ -25,7 +25,7 @@ jobs:
         run: pip install boto3
 
       - name: Deploy Terraform
-        run: bash deploy/deploy_lambda.sh dev
+        run: bash deploy/deploy_terraform.sh dev
 
       - name: Deploy Lambda
         run: bash deploy/deploy_lambda.sh dev

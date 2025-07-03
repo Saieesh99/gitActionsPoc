@@ -44,6 +44,8 @@ after installing
 
 
 Optional: Workspaces for dev/qa/prod, For separate roles per environment:
+    
+    terraform workspace list
 
     terraform workspace new dev
     terraform apply -auto-approve

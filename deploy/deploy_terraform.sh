@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
-
+ENV=$1
 cd terraform
 
-terraform workspace new dev
+terraform workspace new "$ENV"
 terraform init
 terraform validate
 terraform plan
