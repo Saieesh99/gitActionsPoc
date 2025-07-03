@@ -29,8 +29,14 @@ jobs:
         with:
           terraform_version: 1.8.3
 
-      - name: Deploy Terraform
-        run: bash deploy/deploy_terraform.sh dev
+      - name: Terraform Init ✅
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan
 
       - name: Deploy Lambda
         run: bash deploy/deploy_lambda.sh dev
