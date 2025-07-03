@@ -36,7 +36,10 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -var="aws_region=$AWS_REGION"
+
+      - name: Terraform Resource Creation
+        run: terraform apply -auto-approve
 
       - name: Deploy Lambda
         run: bash deploy/deploy_lambda.sh dev
