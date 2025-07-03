@@ -1,0 +1,16 @@
+{
+  "dev": {
+    "bot_name": "MyLexBotDev",
+    "locale_id": "en_US",
+    "locale_name": "English (US)",
+    "alias_name": "dev",
+    "lex_role_arn": "arn:aws:iam::543032853012:role/LexExecutionRole"
+  },
+  "qa": {
+    "bot_name": "MyLexBotQa",
+    "locale_id": "en_US",
+    "locale_name": "English (US)",
+    "alias_name": "dev",
+    "lex_role_arn": "arn:aws:iam::123456789012:role/LexExecutionRole"
+  }
+}

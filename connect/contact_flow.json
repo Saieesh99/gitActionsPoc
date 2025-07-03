@@ -1,0 +1,54 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "e120626d-697b-4fec-bbb7-05dc4a86ab0d",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": 32,
+      "y": 52
+    },
+    "ActionMetadata": {
+      "b354a13e-f1ef-44e0-9d43-1a4dc7d00db8": {
+        "position": {
+          "x": 585,
+          "y": 45
+        }
+      },
+      "e120626d-697b-4fec-bbb7-05dc4a86ab0d": {
+        "position": {
+          "x": 227,
+          "y": 38
+        }
+      }
+    },
+    "Annotations": [],
+    "name": "Test-dev",
+    "description": "",
+    "type": "contactFlow",
+    "status": "SAVED",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Parameters": {},
+      "Identifier": "b354a13e-f1ef-44e0-9d43-1a4dc7d00db8",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "Text": "Test call"
+      },
+      "Identifier": "e120626d-697b-4fec-bbb7-05dc4a86ab0d",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "b354a13e-f1ef-44e0-9d43-1a4dc7d00db8",
+        "Errors": [
+          {
+            "NextAction": "b354a13e-f1ef-44e0-9d43-1a4dc7d00db8",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,6 +1,0 @@
-To add .github folder
-
-git add .github/workflows/deploy-dev.yml
-git add .github/workflows/deploy-qa.yml
-git commit -m "Add GitHub Actions workflows"
-git push origin dev
