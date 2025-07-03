@@ -31,15 +31,19 @@ jobs:
           terraform_version: 1.12.2
 
       - name: Terraform Init ✅
+        working-directory: terraform
         run: terraform init
 
       - name: Terraform Validate
+        working-directory: terraform
         run: terraform validate
 
       - name: Terraform Plan
+        working-directory: terraform
         run: terraform plan -var="aws_region=us-east-1"
 
       - name: Terraform Resource Creation
+        working-directory: terraform
         run: terraform apply -auto-approve
 
       - name: Deploy Lambda
