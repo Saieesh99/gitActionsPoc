@@ -9,3 +9,8 @@ variable "include_lex_policy" {
   type        = bool
   default     = true
 }
+
+variable "aws_region" {
+  description = "AWS region"
+  type        = string
+}

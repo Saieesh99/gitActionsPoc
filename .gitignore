@@ -82,10 +82,28 @@ target/
 profile_default/
 ipython_config.py
 
-# Terraform
-.terraform.lock.hcl
+# Local .terraform directory
 .terraform/
-.zip
+
+# Terraform state
+*.tfstate
+*.tfstate.backup
+
+# Variable files (optional or local)
+terraform.tfvars
+*.tfvars.local
+
+# Crash logs
+crash.log
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore plan output
+terraform.tfplan
 
 # pyenv
 #   For a library or package, you might want to ignore these files since the code is
