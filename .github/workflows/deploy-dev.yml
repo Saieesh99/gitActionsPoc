@@ -38,10 +38,6 @@ jobs:
         working-directory: terraform
         run: terraform validate
 
-      - name: Terraform Plan
-        working-directory: terraform
-        run: terraform plan -var="aws_region=us-east-1"
-
       - name: Terraform Resource Creation
         working-directory: terraform
         run: terraform apply -auto-approve
