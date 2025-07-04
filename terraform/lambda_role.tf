@@ -1,5 +1,6 @@
 resource "aws_iam_role" "lambda_exec_role" {
-  name = var.lambda_role_name
+  count = var.create_lambda_role ? 1 : 0
+  name = var.lexbot_role_name
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -11,16 +12,21 @@ resource "aws_iam_role" "lambda_exec_role" {
       Action = "sts:AssumeRole"
     }]
   })
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "basic_execution" {
-  role       = aws_iam_role.lambda_exec_role.name
+  count      = var.create_lambda_role ? 1 : 0
+  role       = aws_iam_role.lambda_exec_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# Optional: attach Lex permissions or more
 resource "aws_iam_role_policy_attachment" "lex_access" {
-  count      = var.include_lex_policy ? 1 : 0
-  role       = aws_iam_role.lambda_exec_role.name
+  count = var.create_lambda_role && var.include_lex_policy ? 1 : 0
+
+  role       = aws_iam_role.lambda_exec_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonLexFullAccess"
 }
