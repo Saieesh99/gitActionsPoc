@@ -8,5 +8,5 @@ terraform init
 terraform validate
 terraform plan -var="aws_region=$AWS_REGION"
 
-# Optional apply
+# apply
 terraform apply -auto-approve
