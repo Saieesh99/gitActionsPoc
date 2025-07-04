@@ -64,7 +64,10 @@ def main():
     bot_alias_name = env_config['alias_name']
     role_arn = env_config['lex_role_arn']
 
-    client = boto3.client('lexv2-models')
+    import os
+
+    region = os.getenv("AWS_REGION", "us-east-1")
+    client = boto3.client('lexv2-models', region_name=region)
 
     # 1. Check or create bot
     bots = client.list_bots()['botSummaries']
