@@ -14,13 +14,13 @@ resource "aws_iam_role" "lambda_exec_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "basic_execution" {
-  role       = aws_iam_role.lambda_exec.name
+  role       = aws_iam_role.lambda_exec_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 # Optional: attach Lex permissions or more
 resource "aws_iam_role_policy_attachment" "lex_access" {
   count      = var.include_lex_policy ? 1 : 0
-  role       = aws_iam_role.lambda_exec.name
+  role       = aws_iam_role.lambda_exec_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonLexFullAccess"
 }
