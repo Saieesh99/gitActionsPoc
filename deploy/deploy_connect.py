@@ -32,7 +32,10 @@ if not flow_name:
 with open("connect/contact_flow.json") as f:
     content = f.read()
 
-client = boto3.client("connect")
+import os
+
+region = os.getenv("AWS_REGION", "us-east-1")
+client = boto3.client('connect', region_name=region)
 
 # 🔍 Find existing contact flow by name
 response = client.list_contact_flows(InstanceId=instance_id)
