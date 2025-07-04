@@ -10,7 +10,7 @@ FUNC_NAME="connect-lex-lambda"
 ZIP_FILE="lambda_${ENV}.zip"
 HANDLER="handler.lambda_handler"
 RUNTIME="python3.12"
-ROLE_ARN="arn:aws:iam::543032853012:role/my-lambda-exec-role"  # ❗Replace this
+ROLE_ARN="arn:aws:iam::543032853012:role/connect-lambda-exec-role"  # ❗Replace this
 
 REGION=${AWS_REGION:-"us-east-1"}  # Uses env var or fallback
 
