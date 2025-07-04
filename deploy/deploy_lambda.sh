@@ -52,6 +52,9 @@ else
 
   for ((i=1; i<=MAX_RETRIES; i++)); do
     set +e
+    echo "🔎 Verifying IAM role and trust policy..."
+    aws iam get-role --role-name "$(basename $ROLE_ARN)" --region "$REGION" || echo "❌ Role not found"
+    aws iam get-role --role-name "$(basename $ROLE_ARN)" --query 'Role.AssumeRolePolicyDocument' --region "$REGION" || echo "❌ No trust policy"
     VERSION=$(aws lambda create-function \
       --function-name "$FUNC_NAME" \
       --runtime "$RUNTIME" \
