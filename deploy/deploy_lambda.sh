@@ -15,7 +15,7 @@ REGION=${AWS_REGION:-"us-east-1"}
 # Fetch role ARN dynamically (assumes Terraform outputs it)
 ROLE_ARN=$(terraform -chdir=terraform output -raw lambda_exec_role_arn 2>/dev/null || echo "")
 
-# Fallback role ARN (you can delete this once Terraform output works)
+# Fallback role ARN (you can delete this once Terraform output works ok)
 if [[ -z "$ROLE_ARN" ]]; then
   echo "⚠️ Terraform output not found. Falling back to hardcoded ARN"
   ROLE_ARN="arn:aws:iam::543032853012:role/connect-lambda-exec-role"
