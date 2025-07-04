@@ -10,9 +10,16 @@ FUNC_NAME="connect-lex-lambda"
 ZIP_FILE="lambda_${ENV}.zip"
 HANDLER="handler.lambda_handler"
 RUNTIME="python3.12"
-ROLE_ARN="arn:aws:iam::543032853012:role/connect-lambda-exec-role"  # ❗Replace this
+REGION=${AWS_REGION:-"us-east-1"}
 
-REGION=${AWS_REGION:-"us-east-1"}  # Uses env var or fallback
+# Fetch role ARN dynamically (assumes Terraform outputs it)
+ROLE_ARN=$(terraform -chdir=terraform output -raw lambda_exec_role_arn 2>/dev/null || echo "")
+
+# Fallback role ARN (you can delete this once Terraform output works)
+if [[ -z "$ROLE_ARN" ]]; then
+  echo "⚠️ Terraform output not found. Falling back to hardcoded ARN"
+  ROLE_ARN="arn:aws:iam::543032853012:role/connect-lambda-exec-role"
+fi
 
 if [[ -z "$ENV" ]]; then
   echo "❌ ENV not provided. Usage: bash deploy_lambda.sh dev"
@@ -39,14 +46,34 @@ if aws lambda get-function --function-name "$FUNC_NAME" --region "$REGION" > /de
     --query 'Version' --output text)
 else
   echo "🚧 Function not found. Creating new Lambda function..."
-  VERSION=$(aws lambda create-function \
-    --function-name "$FUNC_NAME" \
-    --runtime "$RUNTIME" \
-    --role "$ROLE_ARN" \
-    --handler "$HANDLER" \
-    --zip-file "fileb://$ZIP_FILE" \
-    --region "$REGION" \
-    --query 'Version' --output text)
+
+  MAX_RETRIES=5
+  for ((i=1; i<=MAX_RETRIES; i++)); do
+    set +e
+    VERSION=$(aws lambda create-function \
+      --function-name "$FUNC_NAME" \
+      --runtime "$RUNTIME" \
+      --role "$ROLE_ARN" \
+      --handler "$HANDLER" \
+      --zip-file "fileb://$ZIP_FILE" \
+      --region "$REGION" \
+      --query 'Version' --output text 2>/dev/null)
+    STATUS=$?
+    set -e
+
+    if [[ "$STATUS" -eq 0 ]]; then
+      echo "✅ Lambda created successfully on attempt $i"
+      break
+    else
+      echo "⚠️ Attempt $i failed. Waiting for IAM role to propagate..."
+      sleep 10
+    fi
+
+    if [[ "$i" -eq "$MAX_RETRIES" ]]; then
+      echo "❌ Lambda creation failed after $MAX_RETRIES attempts."
+      exit 1
+    fi
+  done
 fi
 
 echo "✅ Lambda deployed and published version: $VERSION"
