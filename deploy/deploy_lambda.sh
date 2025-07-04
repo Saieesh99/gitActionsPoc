@@ -47,7 +47,9 @@ if aws lambda get-function --function-name "$FUNC_NAME" --region "$REGION" > /de
 else
   echo "🚧 Function not found. Creating new Lambda function..."
 
-  MAX_RETRIES=5
+  MAX_RETRIES=10
+  SLEEP_INTERVAL=10
+
   for ((i=1; i<=MAX_RETRIES; i++)); do
     set +e
     VERSION=$(aws lambda create-function \
@@ -65,8 +67,8 @@ else
       echo "✅ Lambda created successfully on attempt $i"
       break
     else
-      echo "⚠️ Attempt $i failed. Waiting for IAM role to propagate..."
-      sleep 10
+      echo "⚠️ Attempt $i failed. Waiting $SLEEP_INTERVAL seconds for IAM propagation..."
+      sleep $SLEEP_INTERVAL
     fi
 
     if [[ "$i" -eq "$MAX_RETRIES" ]]; then
