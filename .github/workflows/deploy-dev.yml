@@ -42,9 +42,12 @@ jobs:
         working-directory: terraform
         run: terraform plan -var="aws_region=us-east-1"
 
-      - name: Terraform Apply
+      - name: Terraform Apply with Timing
         working-directory: terraform
-        run: terraform apply -auto-approve
+        run: |
+          echo "Starting apply at $(date)"
+          terraform apply -auto-approve -input=false -no-color -parallelism=10
+          echo "Finished apply at $(date)"
 
       - name: Deploy Lambda
         run: bash deploy/deploy_lambda.sh dev
