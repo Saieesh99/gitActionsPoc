@@ -12,14 +12,18 @@ HANDLER="handler.lambda_handler"
 RUNTIME="python3.12"
 REGION=${AWS_REGION:-"us-east-1"}
 
-# Fetch role ARN dynamically (assumes Terraform outputs it)
-ROLE_ARN=$(terraform -chdir=terraform output -raw lambda_exec_role_arn 2>/dev/null || echo "")
+# Fetch role ARN from Terraform output (cleanly)
+ROLE_ARN=$(terraform -chdir=terraform output -raw lambda_exec_role_arn 2>/dev/null || true)
 
-# Fallback role ARN (you can delete this once Terraform output works ok ok)
-if [[ -z "$ROLE_ARN" ]]; then
-  echo "⚠️ Terraform output not found. Falling back to hardcoded ARN"
+# Validate the ARN format
+if [[ ! "$ROLE_ARN" =~ ^arn:aws:iam::[0-9]+:role/.+ ]]; then
+  echo "⚠️ Terraform output not found or invalid. Falling back to hardcoded ARN"
   ROLE_ARN="arn:aws:iam::543032853012:role/connect-lambda-exec-role"
 fi
+
+# Extract role name from ARN
+ROLE_NAME=$(echo "$ROLE_ARN" | sed -E 's|^arn:aws:iam::[0-9]+:role/||')
+
 
 if [[ -z "$ENV" ]]; then
   echo "❌ ENV not provided. Usage: bash deploy_lambda.sh dev"
@@ -53,8 +57,8 @@ else
   for ((i=1; i<=MAX_RETRIES; i++)); do
     set +e
     echo "🔎 Verifying IAM role and trust policy..."
-    aws iam get-role --role-name "$(basename $ROLE_ARN)" --region "$REGION" || echo "❌ Role not found"
-    aws iam get-role --role-name "$(basename $ROLE_ARN)" --query 'Role.AssumeRolePolicyDocument' --region "$REGION" || echo "❌ No trust policy"
+    aws iam get-role --role-name "$ROLE_NAME" --region "$REGION" || echo "❌ Role not found"
+    aws iam get-role --role-name "$ROLE_NAME" --query 'Role.AssumeRolePolicyDocument' --region "$REGION" || echo "❌ No trust policy"
     VERSION=$(aws lambda create-function \
       --function-name "$FUNC_NAME" \
       --runtime "$RUNTIME" \
