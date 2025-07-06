@@ -24,7 +24,6 @@ fi
 # Extract role name from ARN
 ROLE_NAME=$(echo "$ROLE_ARN" | sed -E 's|^arn:aws:iam::[0-9]+:role/||')
 
-
 if [[ -z "$ENV" ]]; then
   echo "❌ ENV not provided. Usage: bash deploy_lambda.sh dev"
   exit 1
@@ -42,12 +41,7 @@ cd ..
 echo "🔍 Checking if Lambda function '$FUNC_NAME' exists..."
 if aws lambda get-function --function-name "$FUNC_NAME" --region "$REGION" > /dev/null 2>&1; then
   echo "✅ Function exists. Updating code..."
-  VERSION=$(aws lambda update-function-code \
-    --function-name "$FUNC_NAME" \
-    --zip-file "fileb://$ZIP_FILE" \
-    --region "$REGION" \
-    --publish \
-    --query 'Version' --output text)
+  VERSION=$(aws lambda update-function-code     --function-name "$FUNC_NAME"     --zip-file "fileb://$ZIP_FILE"     --region "$REGION"     --publish     --query 'Version' --output text)
 else
   echo "🚧 Function not found. Creating new Lambda function..."
 
@@ -59,14 +53,7 @@ else
     echo "🔎 Verifying IAM role and trust policy..."
     aws iam get-role --role-name "$ROLE_NAME" --region "$REGION" || echo "❌ Role not found"
     aws iam get-role --role-name "$ROLE_NAME" --query 'Role.AssumeRolePolicyDocument' --region "$REGION" || echo "❌ No trust policy"
-    VERSION=$(aws lambda create-function \
-      --function-name "$FUNC_NAME" \
-      --runtime "$RUNTIME" \
-      --role "$ROLE_ARN" \
-      --handler "$HANDLER" \
-      --zip-file "fileb://$ZIP_FILE" \
-      --region "$REGION" \
-      --query 'Version' --output text 2>/dev/null)
+    VERSION=$(aws lambda create-function       --function-name "$FUNC_NAME"       --runtime "$RUNTIME"       --role "$ROLE_ARN"       --handler "$HANDLER"       --zip-file "fileb://$ZIP_FILE"       --region "$REGION"       --query 'Version' --output text 2>/dev/null)
     STATUS=$?
     set -e
 
@@ -89,27 +76,33 @@ echo "✅ Lambda deployed and published version: $VERSION"
 
 # Check if alias exists
 echo "🔁 Checking for alias '$ENV'..."
-ALIAS_EXISTS=$(aws lambda get-alias \
-  --function-name "$FUNC_NAME" \
-  --name "$ENV" \
-  --region "$REGION" \
-  --query 'Name' \
-  --output text 2>/dev/null || echo "None")
+ALIAS_EXISTS=$(aws lambda get-alias   --function-name "$FUNC_NAME"   --name "$ENV"   --region "$REGION"   --query 'Name'   --output text 2>/dev/null || echo "None")
 
+# Get SHA256 hash of the new deployment package
+ZIP_SHA256=$(openssl dgst -sha256 -binary "$ZIP_FILE" | openssl base64)
+
+# Fetch current alias version (if exists)
+CURRENT_VERSION=""
 if [[ "$ALIAS_EXISTS" == "$ENV" ]]; then
-  echo "🔄 Updating alias '$ENV' to version $VERSION..."
-  aws lambda update-alias \
-    --function-name "$FUNC_NAME" \
-    --name "$ENV" \
-    --function-version "$VERSION" \
-    --region "$REGION"
+  CURRENT_VERSION=$(aws lambda get-alias     --function-name "$FUNC_NAME"     --name "$ENV"     --region "$REGION"     --query 'FunctionVersion'     --output text 2>/dev/null)
+fi
+
+# Fetch code SHA256 of current alias version
+CURRENT_SHA256=""
+if [[ -n "$CURRENT_VERSION" ]]; then
+  CURRENT_SHA256=$(aws lambda get-function     --function-name "$FUNC_NAME"     --qualifier "$CURRENT_VERSION"     --region "$REGION"     --query 'Configuration.CodeSha256'     --output text 2>/dev/null)
+fi
+
+if [[ "$ZIP_SHA256" == "$CURRENT_SHA256" ]]; then
+  echo "⚠️ Code unchanged. Skipping alias update for '$ENV'."
 else
-  echo "➕ Creating alias '$ENV' for version $VERSION..."
-  aws lambda create-alias \
-    --function-name "$FUNC_NAME" \
-    --name "$ENV" \
-    --function-version "$VERSION" \
-    --region "$REGION"
+  if [[ "$ALIAS_EXISTS" == "$ENV" ]]; then
+    echo "🔄 Updating alias '$ENV' to version $VERSION..."
+    aws lambda update-alias       --function-name "$FUNC_NAME"       --name "$ENV"       --function-version "$VERSION"       --region "$REGION"
+  else
+    echo "➕ Creating alias '$ENV' for version $VERSION..."
+    aws lambda create-alias       --function-name "$FUNC_NAME"       --name "$ENV"       --function-version "$VERSION"       --region "$REGION"
+  fi
 fi
 
 echo "🚀 Deployment complete! Alias '$ENV' now points to version $VERSION"
