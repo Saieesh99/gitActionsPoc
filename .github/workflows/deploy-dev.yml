@@ -54,7 +54,7 @@ jobs:
         run: bash deploy/deploy_lambda.sh dev
 
       - name: Deploy Lex Bot
-        run: python deploy/deploy_lex.py --env dev
+        run: python deploy/deploy_lex.py --bot bot1 --env dev
 
       - name: Deploy Connect Flow
         run: python deploy/deploy_connect.py --env dev

@@ -5,79 +5,85 @@ import argparse
 import json
 import time
 import sys
+import os
 from botocore.exceptions import ClientError
 
 def wait_for_bot_available(client, bot_id):
-    print("\u23f3 Waiting for bot to become AVAILABLE...")
+    print("⏳ Waiting for bot to become AVAILABLE...")
     while True:
         desc = client.describe_bot(botId=bot_id)
         status = desc['botStatus']
-        print(f"   \u21aa Current bot status: {status}")
+        print(f"   ↪ Current bot status: {status}")
         if status == "Available":
             break
         elif status == "Failed":
-            sys.exit("\u274c Bot creation failed.")
+            sys.exit("❌ Bot creation failed.")
         time.sleep(5)
 
 def wait_for_locale_ready(client, bot_id, locale_id):
-    print("\u23f3 Waiting for locale to be ReadyBeforeBuild...")
+    print("⏳ Waiting for locale to be ReadyBeforeBuild...")
     while True:
         status = client.describe_bot_locale(
             botId=bot_id,
             botVersion='DRAFT',
             localeId=locale_id
         )['botLocaleStatus']
-        print(f"   \u21aa Current locale status: {status}")
+        print(f"   ↪ Current locale status: {status}")
         if status in ["ReadyBeforeBuild", "NotBuilt"]:
             break
         elif status == "Failed":
-            sys.exit("\u274c Locale creation failed.")
+            sys.exit("❌ Locale creation failed.")
         time.sleep(5)
 
 def wait_for_locale_build(client, bot_id, locale_id):
-    print("\u23f1 Waiting for build to complete...")
+    print("⏱️ Waiting for build to complete...")
     while True:
         status = client.describe_bot_locale(
             botId=bot_id,
             botVersion='DRAFT',
             localeId=locale_id
         )['botLocaleStatus']
-        print(f"   \u21aa Current status: {status}")
+        print(f"   ↪ Current status: {status}")
         if status in ['Built', 'Failed']:
             return status
         time.sleep(5)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env', required=True)
+    parser.add_argument('--bot', required=True, help="Bot directory name (e.g. bot1)")
+    parser.add_argument('--env', required=True, help="Environment (e.g. dev, qa, prod)")
     args = parser.parse_args()
 
-    with open('lex/lex_config.json') as f:
+    bot_dir = f'lex/{args.bot}'
+    config_path = os.path.join(bot_dir, 'lex_config.json')
+    export_path = os.path.join(bot_dir, 'exported', args.env, 'export.json')
+
+    if not os.path.exists(config_path):
+        sys.exit(f"❌ Config file not found: {config_path}")
+
+    with open(config_path) as f:
         config = json.load(f)
 
     env_config = config.get(args.env)
     if not env_config:
-        sys.exit(f"\u274c No Lex config found for environment '{args.env}'")
+        sys.exit(f"❌ No config found for env '{args.env}' in {config_path}")
 
     bot_name = env_config['bot_name']
     locale_id = env_config['locale_id']
-    bot_alias_name = env_config['alias_name']
+    alias_name = env_config['alias_name']
     role_arn = env_config['lex_role_arn']
-
-    import os
 
     region = os.getenv("AWS_REGION", "us-east-1")
     client = boto3.client('lexv2-models', region_name=region)
 
-    # 1. Check or create bot
     bots = client.list_bots()['botSummaries']
     bot = next((b for b in bots if b['botName'] == bot_name), None)
 
     if bot:
         bot_id = bot['botId']
-        print(f"\u2705 Bot '{bot_name}' exists (ID: {bot_id})")
+        print(f"✅ Bot '{bot_name}' exists (ID: {bot_id})")
     else:
-        print(f"\u2795 Creating bot '{bot_name}'...")
+        print(f"➕ Creating bot '{bot_name}'...")
         response = client.create_bot(
             botName=bot_name,
             roleArn=role_arn,
@@ -85,15 +91,14 @@ def main():
             idleSessionTTLInSeconds=300
         )
         bot_id = response['botId']
-        print(f"\u2705 Created bot: {bot_id}")
+        print(f"✅ Created bot ID: {bot_id}")
         wait_for_bot_available(client, bot_id)
 
-    # 2. Check or create locale
     locales = client.list_bot_locales(botId=bot_id, botVersion='DRAFT')['botLocaleSummaries']
     locale = next((l for l in locales if l['localeId'] == locale_id), None)
 
     if not locale:
-        print(f"\u2795 Creating locale '{locale_id}'...")
+        print(f"➕ Creating locale '{locale_id}'...")
         client.create_bot_locale(
             botId=bot_id,
             botVersion='DRAFT',
@@ -104,12 +109,9 @@ def main():
 
     wait_for_locale_ready(client, bot_id, locale_id)
 
-    # 3. Ensure a sample intent exists
     intents = client.list_intents(botId=bot_id, botVersion='DRAFT', localeId=locale_id)['intentSummaries']
-    intent_exists = any(i['intentName'] == 'HelloIntent' for i in intents)
-
-    if not intent_exists:
-        print("\u2795 Adding fallback HelloIntent...")
+    if not any(i['intentName'] == 'HelloIntent' for i in intents):
+        print("➕ Adding HelloIntent...")
         client.create_intent(
             botId=bot_id,
             botVersion='DRAFT',
@@ -121,60 +123,21 @@ def main():
                 {'utterance': 'hey there'}
             ]
         )
-        print("\u2705 HelloIntent added.")
-        client.create_intent(
-            botId=bot_id,
-            botVersion='DRAFT',
-            localeId=locale_id,
-            intentName='SecondHelloIntent',
-            sampleUtterances=[
-                {'utterance': 'second hi'},
-                {'utterance': 'second hello'},
-                {'utterance': 'second hey there'}
-            ]
-        )
-        print("\u2705 Second HelloIntent added.")
-    else:
-        print("\u2705 HelloIntent already exists.")
+        print("✅ HelloIntent added.")
 
-    # 4. Build locale
-    print(f"\u1f504 Building locale '{locale_id}'...")
+    print(f"🔄 Building locale '{locale_id}'...")
     client.build_bot_locale(botId=bot_id, botVersion='DRAFT', localeId=locale_id)
-
     build_status = wait_for_locale_build(client, bot_id, locale_id)
     if build_status == 'Failed':
-        sys.exit("\u274c Bot build failed.")
-    print("\u2705 Locale built successfully.")
+        sys.exit("❌ Bot build failed.")
+    print("✅ Locale built successfully.")
 
-    # # 5. Create or update alias
-    # aliases = client.list_bot_aliases(botId=bot_id)['botAliasSummaries']
-    # alias = next((a for a in aliases if a['botAliasName'] == bot_alias_name), None)
-
-    # if alias:
-    #     print(f"\u1f501 Updating alias '{bot_alias_name}'...")
-    #     client.update_bot_alias(
-    #         botAliasId=alias['botAliasId'],
-    #         botId=bot_id,
-    #         botAliasName=bot_alias_name,
-    #         botVersion='DRAFT',
-    #         localeSettings={locale_id: {'enabled': True}}
-    #     )
-    # else:
-    #     print(f"\u2795 Creating alias '{bot_alias_name}'...")
-    #     # client.create_bot_alias(
-    #     #     botAliasName=bot_alias_name,
-    #     #     botId=bot_id,
-    #     #     botVersion='DRAFT',
-    #     #     localeSettings={locale_id: {'enabled': True}}
-    #     # )
-    #     client.create_bot_alias(
-    #         botAliasName=bot_alias_name,
-    #         botId=bot_id,
-    #         botVersion='DRAFT',
-    #         botAliasLocaleSettings=alias_settings
-    #     )
-
-    # print(f"\U0001f680 Lex bot deployed successfully for environment: {args.env}")
+    print(f"📤 Exporting bot definition to {export_path}...")
+    os.makedirs(os.path.dirname(export_path), exist_ok=True)
+    export_data = client.describe_bot(botId=bot_id)
+    with open(export_path, 'w') as f:
+        json.dump(export_data, f, indent=2)
+    print("✅ Export completed.")
 
 if __name__ == '__main__':
     main()
