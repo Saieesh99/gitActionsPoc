@@ -23,5 +23,5 @@ variable "aws_region" {
 
 variable "create_lambda_role" {
   type    = bool
-  default = true
+  default = false
 }
