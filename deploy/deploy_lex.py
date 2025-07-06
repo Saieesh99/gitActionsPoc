@@ -8,6 +8,14 @@ import sys
 import os
 from botocore.exceptions import ClientError
 
+import datetime
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        return super().default(obj)
+
 def wait_for_bot_available(client, bot_id):
     print("⏳ Waiting for bot to become AVAILABLE...")
     while True:
@@ -136,7 +144,7 @@ def main():
     os.makedirs(os.path.dirname(export_path), exist_ok=True)
     export_data = client.describe_bot(botId=bot_id)
     with open(export_path, 'w') as f:
-        json.dump(export_data, f, indent=2)
+        json.dump(export_data, f, indent=2, cls=DateTimeEncoder)
     print("✅ Export completed.")
 
 if __name__ == '__main__':
