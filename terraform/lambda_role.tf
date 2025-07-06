@@ -1,6 +1,6 @@
 resource "aws_iam_role" "lambda_exec_role" {
   count = var.create_lambda_role ? 1 : 0
-  name = var.lexbot_role_name
+  name = var.lambda_role_name
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
