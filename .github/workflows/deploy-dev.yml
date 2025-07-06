@@ -48,7 +48,7 @@ jobs:
 
       - name: Terraform Apply
         working-directory: terraform
-        run: terraform apply -auto-approve -var="aws_region=us-east-1" -var="create_lambda_role=false" -input=false -no-color -parallelism=10
+        run: terraform apply -auto-approve -var="aws_region=us-east-1" -var="create_role=false" -input=false -no-color -parallelism=10
 
       - name: Deploy Lambda
         run: bash deploy/deploy_lambda.sh dev
