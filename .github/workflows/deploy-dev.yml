@@ -53,8 +53,49 @@ jobs:
       - name: Deploy Lambda
         run: bash deploy/deploy_lambda.sh dev
 
-      - name: Deploy Lex Bot
-        run: python deploy/deploy_lex.py --bot bot1 --env dev
+      - name: Deploy Lex Bot from ZIP (if available)
+        run: |
+          ZIP_FILE=$(find lex/bot1/exported/dev -name '*.zip' | head -n 1)
+          if [ -f "$ZIP_FILE" ]; then
+            echo "📦 Found ZIP: $ZIP_FILE — using start-import"
+            IMPORT_ID=$(aws lexv2-models start-import \
+              --resource-specification bot=@"$ZIP_FILE" \
+              --merge-strategy Overwrite \
+              --region us-east-1 \
+              --query importId --output text)
+
+            echo "🆔 Import started: $IMPORT_ID"
+
+            # Wait for completion
+            STATUS="InProgress"
+            ATTEMPTS=0
+            MAX_ATTEMPTS=20
+
+            while [[ "$STATUS" == "InProgress" || "$STATUS" == "Waiting" ]]; do
+              STATUS=$(aws lexv2-models describe-import \
+                --import-id "$IMPORT_ID" \
+                --region us-east-1 \
+                --query 'importStatus' \
+                --output text)
+              echo "⏳ Import status: $STATUS"
+              if [[ "$STATUS" == "Completed" ]]; then
+                echo "✅ Import complete."
+                exit 0
+              elif [[ "$STATUS" == "Failed" ]]; then
+                echo "❌ Import failed. Details:"
+                aws lexv2-models describe-import --import-id "$IMPORT_ID" --region us-east-1
+                exit 1
+              fi
+              sleep 10
+              ((ATTEMPTS++))
+              if [[ $ATTEMPTS -ge $MAX_ATTEMPTS ]]; then
+                echo "❌ Timeout waiting for import to complete."
+                exit 1
+              fi
+            done
+          else
+            echo "📁 No zip file found. Falling back to deploy_lex.py"
+            python deploy/deploy_lex.py --bot bot1 --env dev
 
       - name: Deploy Connect Flow
         run: python deploy/deploy_connect.py --env dev
