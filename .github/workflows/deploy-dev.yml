@@ -54,6 +54,7 @@ jobs:
         run: bash deploy/deploy_lambda.sh dev
 
       - name: Deploy Lex Bot from ZIP (if available)
+        shell: bash
         run: |
           set -e
 
@@ -100,6 +101,7 @@ jobs:
           else
             echo "📁 No ZIP found — falling back to deploy_lex.py"
             python deploy/deploy_lex.py --bot bot1 --env dev
+          fi
 
       - name: Deploy Connect Flow
         run: python deploy/deploy_connect.py --env dev
