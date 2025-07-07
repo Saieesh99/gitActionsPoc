@@ -97,7 +97,7 @@ if [[ "$ZIP_SHA256" == "$CURRENT_SHA256" ]]; then
   echo "⚠️ Code unchanged. Skipping alias update for '$ENV'."
 else
   if [[ "$ALIAS_EXISTS" == "$ENV" ]]; then
-    echo "🔄 Updating alias '$ENV' to version $VERSION..."
+    echo "🔄 Updating entered alias '$ENV' to version $VERSION..."
     aws lambda update-alias       --function-name "$FUNC_NAME"       --name "$ENV"       --function-version "$VERSION"       --region "$REGION"
   else
     echo "➕ Creating alias '$ENV' for version $VERSION..."
