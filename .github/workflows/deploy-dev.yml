@@ -68,6 +68,11 @@ jobs:
               --region us-east-1 \
               --query importId --output text)
 
+            if [ -z "$IMPORT_ID" ]; then
+              echo "❌ Failed to start import — no import ID returned."
+              exit 1
+            fi
+
             echo "🆔 Import started: $IMPORT_ID"
 
             STATUS="InProgress"
@@ -102,6 +107,7 @@ jobs:
             echo "📁 No ZIP found — falling back to deploy_lex.py"
             python deploy/deploy_lex.py --bot bot1 --env dev
           fi
+
 
       - name: Deploy Connect Flow
         run: python deploy/deploy_connect.py --env dev
