@@ -93,11 +93,17 @@ if [[ -n "$CURRENT_VERSION" ]]; then
   CURRENT_SHA256=$(aws lambda get-function     --function-name "$FUNC_NAME"     --qualifier "$CURRENT_VERSION"     --region "$REGION"     --query 'Configuration.CodeSha256'     --output text 2>/dev/null)
 fi
 
+
+print("ZIP_SHA256","$ZIP_SHA256")
+print("CURRENT_SHA256","$CURRENT_SHA256")
+print("ALIAS_EXISTS","$ALIAS_EXISTS")
+print("ENV","$ENV")
+print("VERSION","$VERSION")
 if [[ "$ZIP_SHA256" == "$CURRENT_SHA256" ]]; then
   echo "⚠️ Code unchanged. Skipping alias update for '$ENV'."
 else
   if [[ "$ALIAS_EXISTS" == "$ENV" ]]; then
-    echo "🔄 Updating entered alias '$ENV' to version $VERSION..."
+    echo "🔄 Updating alias '$ENV' to version $VERSION..."
     aws lambda update-alias       --function-name "$FUNC_NAME"       --name "$ENV"       --function-version "$VERSION"       --region "$REGION"
   else
     echo "➕ Creating alias '$ENV' for version $VERSION..."
