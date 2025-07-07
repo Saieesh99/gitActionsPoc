@@ -37,7 +37,7 @@ def wait_for_locale_ready(client, bot_id, locale_id):
             localeId=locale_id
         )['botLocaleStatus']
         print(f"   ↪ Current locale status: {status}")
-        if status in ["ReadyBeforeBuild", "NotBuilt"]:
+        if status in ["ReadyBeforeBuild", "NotBuilt", "Built"]:
             break
         elif status == "Failed":
             sys.exit("❌ Locale creation failed.")
