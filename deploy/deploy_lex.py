@@ -91,7 +91,7 @@ def main():
         bot_id = bot['botId']
         print(f"✅ Bot '{bot_name}' exists (ID: {bot_id})")
     else:
-        print(f"➕ Creating bot '{bot_name}'...")
+        print(f"➕ Creating bot qq'{bot_name}'...")
         response = client.create_bot(
             botName=bot_name,
             roleArn=role_arn,
