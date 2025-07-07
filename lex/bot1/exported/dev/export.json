@@ -1,0 +1,29 @@
+{
+  "ResponseMetadata": {
+    "RequestId": "3977456b-9750-4ade-85f7-9d86ecc6099d",
+    "HTTPStatusCode": 200,
+    "HTTPHeaders": {
+      "date": "Mon, 07 Jul 2025 07:59:52 GMT",
+      "content-type": "application/x-amz-json-1.1",
+      "content-length": "365",
+      "connection": "keep-alive",
+      "x-amzn-requestid": "3977456b-9750-4ade-85f7-9d86ecc6099d",
+      "strict-transport-security": "max-age=31536000; includeSubDomains",
+      "x-amz-apigw-id": "NVCy1H2EoAMEBCg=",
+      "x-content-type-options": "nosniff",
+      "x-amzn-trace-id": "Root=1-686b7e78-3bce3ad5180eeda836e20f82"
+    },
+    "RetryAttempts": 0
+  },
+  "botId": "EZQA4VEO2O",
+  "botName": "bot1",
+  "roleArn": "arn:aws:iam::543032853012:role/LexExecutionRole",
+  "dataPrivacy": {
+    "childDirected": false
+  },
+  "idleSessionTTLInSeconds": 300,
+  "botStatus": "Available",
+  "creationDateTime": "2025-07-07T13:29:05.889000+05:30",
+  "lastUpdatedDateTime": "2025-07-07T13:29:05.889000+05:30",
+  "botType": "Bot"
+}
