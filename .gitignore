@@ -216,3 +216,4 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 lambda_dev.zip
+aws

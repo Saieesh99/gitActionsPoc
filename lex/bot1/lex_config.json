@@ -4,13 +4,15 @@
     "locale_id": "en_US",
     "locale_name": "English (US)",
     "alias_name": "dev",
-    "lex_role_arn": "arn:aws:iam::543032853012:role/LexExecutionRole"
+    "lex_role_arn": "arn:aws:iam::543032853012:role/LexExecutionRole",
+    "child_directed": false
   },
   "qa": {
     "bot_name": "bot1",
     "locale_id": "en_US",
     "locale_name": "English (US)",
-    "alias_name": "dev",
-    "lex_role_arn": "arn:aws:iam::123456789012:role/LexExecutionRole"
+    "alias_name": "qa",
+    "lex_role_arn": "arn:aws:iam::123456789012:role/LexExecutionRole",
+    "child_directed": false
   }
 }

@@ -69,3 +69,26 @@ Optional: Workspaces for dev/qa/prod, For separate roles per environment:
 
 bash deploy/deploy_lambda.sh dev
 python3 deploy/deploy_connect.py --env dev
+
+
+
+install aws cli 2
+1.   sudo apt remove awscli
+2.   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+3.   aws --version #(if not getting, follow the further steps)
+4. which aws
+5. ls -l /usr/local/bin/aws
+6. export PATH=/usr/local/bin:$PATH
+7. aws --version
+8. nano ~/.bashrc #(make the changes permanent)
+9. Add at the end this line: export PATH=/usr/local/bin:$PATH
+10. source ~/.bashrc   # or source ~/.zshrc #(applied)
+11. sudo rm -f /usr/bin/aws    #(cleanup - optional)
+sudo ln -s /usr/local/bin/aws /usr/bin/aws
+
+
+
+
+

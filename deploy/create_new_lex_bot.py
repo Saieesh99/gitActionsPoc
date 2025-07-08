@@ -64,7 +64,6 @@ def main():
 
     bot_dir = f'lex/{args.bot}'
     config_path = os.path.join(bot_dir, 'lex_config.json')
-    export_path = os.path.join(bot_dir, 'exported', args.env, 'export.json')
 
     if not os.path.exists(config_path):
         sys.exit(f"❌ Config file not found: {config_path}")
@@ -139,13 +138,6 @@ def main():
     if build_status == 'Failed':
         sys.exit("❌ Bot build failed.")
     print("✅ Locale built successfully.")
-
-    print(f"📤 Exporting bot definition to {export_path}...")
-    os.makedirs(os.path.dirname(export_path), exist_ok=True)
-    export_data = client.describe_bot(botId=bot_id)
-    with open(export_path, 'w') as f:
-        json.dump(export_data, f, indent=2, cls=DateTimeEncoder)
-    print("✅ Export completed.")
 
 if __name__ == '__main__':
     main()
