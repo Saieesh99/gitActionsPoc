@@ -6,7 +6,7 @@
 set -e  # Stop on any error
 
 ENV=$1
-FUNC_NAME="connect-lex-lambda"
+FUNC_NAME="connect-lex-lambda-${ENV}"
 ZIP_FILE="lambda_${ENV}.zip"
 HANDLER="handler.lambda_handler"
 RUNTIME="python3.12"
@@ -18,7 +18,7 @@ ROLE_ARN=$(terraform -chdir=terraform output -raw lambda_exec_role_arn 2>/dev/nu
 # Validate the ARN format
 if [[ ! "$ROLE_ARN" =~ ^arn:aws:iam::[0-9]+:role/.+ ]]; then
   echo "⚠️ Terraform output not found or invalid. Falling back to hardcoded ARN"
-  ROLE_ARN="arn:aws:iam::543032853012:role/connect-lambda-exec-role"
+  ROLE_ARN="arn:aws:iam::543032853012:role/connect-lambda-exec-role-${ENV}"
 fi
 
 # Extract role name from ARN
@@ -93,11 +93,11 @@ if [[ -n "$CURRENT_VERSION" ]]; then
   CURRENT_SHA256=$(aws lambda get-function     --function-name "$FUNC_NAME"     --qualifier "$CURRENT_VERSION"     --region "$REGION"     --query 'Configuration.CodeSha256'     --output text 2>/dev/null)
 fi
 
-echo "ZIP_SHA256: $ZIP_SHA256"
-echo "CURRENT_SHA256: $CURRENT_SHA256"
-echo "ALIAS_EXISTS: $ALIAS_EXISTS"
-echo "ENV: $ENV"
-echo "VERSION: $VERSION"
+# echo "ZIP_SHA256: $ZIP_SHA256"
+# echo "CURRENT_SHA256: $CURRENT_SHA256"
+# echo "ALIAS_EXISTS: $ALIAS_EXISTS"
+# echo "ENV: $ENV"
+# echo "VERSION: $VERSION"
 
 if [[ "$ZIP_SHA256" == "$CURRENT_SHA256" ]]; then
   echo "⚠️ Code unchanged. Skipping alias update for '$ENV'."

@@ -92,7 +92,7 @@ def main():
     else:
         print(f"➕ Creating bot qq'{bot_name}'...")
         response = client.create_bot(
-            botName=bot_name,
+            botName=f"{bot_name}-{args.env}",
             roleArn=role_arn,
             dataPrivacy={"childDirected": False},
             idleSessionTTLInSeconds=300
