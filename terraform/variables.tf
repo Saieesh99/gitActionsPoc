@@ -7,7 +7,7 @@ variable "lambda_role_name" {
 variable "lexbot_role_name" {
   description = "Name of the IAM role to create for Lex Bot"
   type        = string
-  default     = "LexExecutionRole"
+  default     = "lex-exec-role"
 }
 
 variable "include_lex_policy" {
@@ -24,4 +24,9 @@ variable "aws_region" {
 variable "create_role" {
   type    = bool
   default = false
+}
+
+variable "environment" {
+  description = "The deployment environment (e.g., dev, uat, prod)"
+  type        = string
 }

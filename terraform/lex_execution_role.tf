@@ -1,6 +1,6 @@
 resource "aws_iam_role" "lex_execution" {
   count = var.create_role ? 1 : 0
-  name = var.lexbot_role_name
+  name  = "${var.lexbot_role_name}-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
