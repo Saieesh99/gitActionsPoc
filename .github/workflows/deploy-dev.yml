@@ -42,7 +42,7 @@ jobs:
 
       - name: Terraform Plan
         working-directory: terraform
-        run: terraform plan -var="aws_region=us-east-1"
+        run: terraform plan -var="aws_region=us-east-1" -var="environment=dev"
 
       - name: Show contents of terraform folder
         run: ls -la
