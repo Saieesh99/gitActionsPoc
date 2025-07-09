@@ -27,6 +27,6 @@ variable "create_role" {
 }
 
 variable "environment" {
-  description = "The deployment environment (e.g., dev, uat, prod)"
+  description = "The deployment environment(e.g., dev, uat, prod)"
   type        = string
 }
