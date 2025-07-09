@@ -40,7 +40,7 @@ jobs:
         working-directory: terraform
         run: terraform validate
 
-      - name: Terraform Plan
+      - name: Terraform Plan1
         working-directory: terraform
         run: terraform plan -var="aws_region=us-east-1" -var="environment=uat"
 
