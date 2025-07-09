@@ -38,7 +38,7 @@ def ensure_bot_exists(bot_name, bot, env, region):
         print(f"✅ Bot '{bot_name}' already exists.")
         return
 
-    print(f"🛠 Bot '{bot_name}' not found — invoking build_bot.py...")
+    print(f"🛠 Bot '{bot_name}' not found — invoking create_new_lex_bot.py...")
     subprocess.run([
         sys.executable, "deploy/create_new_lex_bot.py", "--bot", bot, "--env", env
     ], check=True)
@@ -47,7 +47,7 @@ def ensure_bot_exists(bot_name, bot, env, region):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--bot", required=True, help="Bot name (directory)")
-    parser.add_argument("--env", required=True, help="Environment (e.g., dev, qa)")
+    parser.add_argument("--env", required=True, help="Environment (e.g., dev, uat)")
     parser.add_argument("--region", default="us-east-1", help="AWS region")
     args = parser.parse_args()
 

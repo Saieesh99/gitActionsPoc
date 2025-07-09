@@ -8,7 +8,7 @@ import sys
 # 🔧 Configure this map based on your environments
 CONTACT_FLOW_NAMES = {
     "dev": "test-dev",
-    "qa": "test-qa",
+    "uat": "test-uat",
     "prod": "test-prod"
 }
 
