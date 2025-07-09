@@ -90,7 +90,6 @@ ipython_config.py
 *.tfstate.backup
 
 # Variable files (optional or local)
-terraform.tfvars
 *.tfvars.local
 
 # Crash logs

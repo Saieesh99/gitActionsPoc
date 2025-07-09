@@ -42,15 +42,11 @@ jobs:
 
       - name: Terraform Plan1
         working-directory: terraform
-        run: terraform plan -var="aws_region=us-east-1" -var="environment=uat"
-
-      - name: Show contents of terraform folder
-        run: ls -la
-        working-directory: terraform
+        run: terraform plan -var-file="terraform.tfvars"
 
       - name: Terraform Apply
         working-directory: terraform
-        run: terraform apply -auto-approve -var="aws_region=us-east-1" -var="create_role=true" -var="environment=uat" -input=false -no-color -parallelism=10
+        run: terraform apply -auto-approve -var-file="terraform.tfvars" -var="create_role=true" -input=false -no-color -parallelism=10
 
       - name: Deploy Lambda
         run: bash deploy/deploy_lambda.sh uat
