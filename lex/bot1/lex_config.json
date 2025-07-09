@@ -12,7 +12,7 @@
     "locale_id": "en_US",
     "locale_name": "English (US)",
     "alias_name": "uat",
-    "lex_role_arn": "arn:aws:iam::123456789012:role/lex-exec-role-uat",
+    "lex_role_arn": "arn:aws:iam::543032853012:role/lex-exec-role-uat",
     "child_directed": false
   }
 }
