@@ -10,6 +10,21 @@ resource "aws_iam_role" "lex_execution" {
         Service = "lexv2.amazonaws.com"
       },
       Action = "sts:AssumeRole"
+    },
+    {
+      Effect: "Allow",
+      Action: [
+        "lex:StartImport",
+        "lex:GetImport",
+        "lex:ListImports",
+        "lex:DescribeBot",
+        "lex:ListBots",
+        "lex:ListBotVersions",
+        "lex:ListBotLocales",
+        "lex:DescribeBotAlias",
+        "lex:CreateBotAlias"
+      ],
+      Resource = "*"
     }]
   })
 }
