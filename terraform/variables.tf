@@ -19,6 +19,7 @@ variable "include_lex_policy" {
 variable "aws_region" {
   description = "AWS region"
   type        = string
+  default = "us-east-1"
 }
 
 variable "create_role" {
@@ -29,4 +30,20 @@ variable "create_role" {
 variable "environment" {
   description = "The deployment environment (e.g., dev, uat, prod)"
   type        = string
+}
+
+variable "bucket_name" {
+  type = string
+}
+
+variable "lambda_name" {
+  type = string
+}
+
+variable "ses_from" {
+  type = string
+}
+
+variable "ses_to" {
+  type = string
 }

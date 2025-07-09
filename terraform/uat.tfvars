@@ -1,0 +1,5 @@
+aws_region  = "us-east-1"
+bucket_name = "voicemail-bucket-dev"
+lambda_name = "voicemail-email-lambda-dev"
+ses_from    = "from@example.com"
+ses_to      = "to@example.com"
