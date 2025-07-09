@@ -30,3 +30,7 @@ variable "environment" {
   description = "The deployment environment(e.g., dev, uat, prod)"
   type        = string
 }
+
+variable "aws_account_id" {
+  type = string
+}
