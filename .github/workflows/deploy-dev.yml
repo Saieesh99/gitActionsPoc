@@ -13,6 +13,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
       AWS_REGION : us-east-1
+      BUCKET_NAME: voicemail-bucket-${{ github.event.inputs.env }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -32,6 +33,20 @@ jobs:
         with:
           terraform_version: 1.12.2
 
+      - name: 🔐 Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: 🪣 Deploy S3 Bucket
+        run: |
+          python deploy/deploy_s3_bucket.py
+        env:
+          BUCKET_NAME: ${{ env.BUCKET_NAME }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+
       - name: Terraform Init ✅
         working-directory: terraform
         run: terraform init
@@ -39,6 +54,20 @@ jobs:
       - name: Terraform Validate
         working-directory: terraform
         run: terraform validate
+
+      - name: 🛠️ Terraform Apply IAM + Lambda Shell
+        working-directory: infra
+        run: |
+          terraform apply -auto-approve -var-file=${{ github.event.inputs.env }}.tfvars
+
+      - name: 📦 Deploy Lambda Function (Email Sender)
+        run: |
+          python deploy/deploy_lambda.py
+        env:
+          LAMBDA_NAME: voicemail_email_lambda
+          SES_FROM: ${{ secrets.SES_FROM }}
+          SES_TO: ${{ secrets.SES_TO }}
+          AWS_REGION: ${{ env.AWS_REGION }}
 
       - name: Terraform Plan
         working-directory: terraform

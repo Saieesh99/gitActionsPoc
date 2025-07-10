@@ -1,3 +1,7 @@
 aws_region = "us-east-1"
 aws_account_id = "543032853012"
 environment    = "dev"
+bucket_name = "voicemail-bucket-dev"
+lambda_name = "voicemail-email-lambda-dev"
+ses_from    = "from@example.com"
+ses_to      = "to@example.com"
