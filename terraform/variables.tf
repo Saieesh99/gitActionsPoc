@@ -10,6 +10,12 @@ variable "lexbot_role_name" {
   default     = "lex-exec-role"
 }
 
+variable "email_lambda_role_name" {
+  description = "Name of the IAM role to create lambda with email sending capabilities"
+  type        = string
+  default     = "email-lambda-role"
+}
+
 variable "include_lex_policy" {
   description = "Whether to attach AmazonLexFullAccess policy"
   type        = bool
@@ -36,6 +42,10 @@ variable "aws_account_id" {
   type = string
 }
 
+variable "aws_user_id" {
+  type = string
+}
+
 variable "bucket_name" {
   type = string
 }
@@ -51,3 +61,14 @@ variable "ses_from" {
 variable "ses_to" {
     type = string
 }
+
+
+# variable "lambda_functions" {
+#   description = "List of lambda functions to deploy"
+#   type = list(object({
+#     name      = string
+#     handler   = string
+#     role_arn  = string
+#     runtime   = string
+#   }))
+# }

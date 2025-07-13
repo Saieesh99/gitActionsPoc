@@ -5,3 +5,5 @@ bucket_name = "voicemail-bucket-dev"
 lambda_name = "voicemail-email-lambda-dev"
 ses_from    = "from@example.com"
 ses_to      = "to@example.com"
+aws_user_id = "pslDev"
+create_role = true
