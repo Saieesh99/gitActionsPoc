@@ -1,0 +1,38 @@
+{
+  "dev": [
+    {
+      "name": "email_lambda",
+      "path": "lambda/dev/email_lambda",
+      "role_arn": "arn:aws:iam::543032853012:role/email-lambda-role-dev"
+    },
+    {
+      "name": "connect_lambda_bot1",
+      "path": "lambda/dev/connect_lambda_bot1",
+      "role_arn": "arn:aws:iam::543032853012:role/connect-lambda-exec-role-dev"
+    }
+  ],
+  "uat": [
+    {
+      "name": "email_lambda",
+      "path": "lambda/uat/email_lambda",
+      "role_arn": "arn:aws:iam::543032853012:role/email-lambda-role-uat"
+    },
+    {
+      "name": "connect_lambda_bot1",
+      "path": "lambda/uat/connect_lambda_bot1",
+      "role_arn": "arn:aws:iam::543032853012:role/connect-lambda-exec-role-uat"
+    }
+  ],
+  "prod": [
+    {
+      "name": "email_lambda",
+      "path": "lambda/prod/email_lambda",
+      "role_arn": "arn:aws:iam::543032853012:role/email-lambda-role-prod"
+    },
+    {
+      "name": "connect_lambda_bot1",
+      "path": "lambda/prod/connect_lambda_bot1",
+      "role_arn": "arn:aws:iam::543032853012:role/connect-lambda-exec-role-prod"
+    }
+  ]
+}

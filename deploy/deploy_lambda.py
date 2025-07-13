@@ -1,48 +1,65 @@
-# deploy_lambda.py
-import boto3
-import zipfile
 import os
+import zipfile
+import boto3
+import argparse
+import json
 
-LAMBDA_NAME = "voicemail_email_lambda"
-ZIP_NAME = "lambda_email.zip"
-LAMBDA_HANDLER = "lambda_function.lambda_handler"
-ROLE_ARN = "arn:aws:iam::<account-id>:role/lambda_email_role"
+def zip_lambda(source_dir, zip_path):
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for root, _, files in os.walk(source_dir):
+            for file in files:
+                full_path = os.path.join(root, file)
+                arcname = os.path.relpath(full_path, start=source_dir)
+                zf.write(full_path, arcname)
 
-def create_zip():
-    with zipfile.ZipFile(ZIP_NAME, 'w') as zipf:
-        zipf.write('lambda_email/lambda_function.py', arcname='lambda_function.py')
-    print(f"{ZIP_NAME} created")
-
-def deploy_lambda():
-    create_zip()
-    client = boto3.client('lambda')
-    with open(ZIP_NAME, 'rb') as f:
-        zipped_code = f.read()
+def deploy_lambda(lambda_client, function_name, zip_path, role_arn):
+    with open(zip_path, 'rb') as f:
+        code_bytes = f.read()
 
     try:
-        client.update_function_code(
-            FunctionName=LAMBDA_NAME,
-            ZipFile=zipped_code,
+        lambda_client.get_function(FunctionName=function_name)
+        print(f"🔁 Updating Lambda: {function_name}")
+        lambda_client.update_function_code(
+            FunctionName=function_name,
+            ZipFile=code_bytes
+        )
+    except lambda_client.exceptions.ResourceNotFoundException:
+        print(f"➕ Creating Lambda: {function_name}")
+        lambda_client.create_function(
+            FunctionName=function_name,
+            Runtime='python3.12',
+            Role=role_arn,
+            Handler='handler.lambda_handler',
+            Code={'ZipFile': code_bytes},
+            Timeout=60,
+            MemorySize=128,
             Publish=True
         )
-        print("Lambda code updated.")
-    except client.exceptions.ResourceNotFoundException:
-        client.create_function(
-            FunctionName=LAMBDA_NAME,
-            Runtime="python3.12",
-            Role=ROLE_ARN,
-            Handler=LAMBDA_HANDLER,
-            Code={'ZipFile': zipped_code},
-            Environment={
-                'Variables': {
-                    'SES_FROM': "from@example.com",
-                    'SES_TO': "to@example.com"
-                }
-            },
-            Timeout=30,
-            MemorySize=128
+
+def main(env):
+    region = os.environ.get("AWS_REGION", "us-east-1")
+    lambda_client = boto3.client("lambda", region_name=region)
+
+    with open("config/lambda_config.json") as f:
+        all_config = json.load(f)
+
+    if env not in all_config:
+        raise Exception(f"❌ No Lambda config found for env: {env}")
+
+    for fn in all_config[env]:
+        zip_path = f"{fn['path']}.zip"
+        print(f"📦 Zipping {fn['path']} to {zip_path}")
+        zip_lambda(fn['path'], zip_path)
+
+        deploy_lambda(
+            lambda_client=lambda_client,
+            function_name=f"{fn['name']}-{env}",
+            zip_path=zip_path,
+            role_arn=fn['role_arn']
         )
-        print("Lambda function created.")
 
 if __name__ == "__main__":
-    deploy_lambda()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--env", required=True, help="Environment (dev/uat/prod)")
+    args = parser.parse_args()
+    main(args.env)
