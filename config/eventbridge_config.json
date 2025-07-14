@@ -1,0 +1,21 @@
+{
+  "region": "us-east-1",
+  "bucket_name": "voicemail-bucket-dev",
+  "environments": {
+    "dev": {
+      "prefix": "voicemail/dev/",
+      "rule_name": "wav-upload-rule-dev",
+      "lambda_arn": "arn:aws:lambda:us-east-1:543032853012:function:email_lambda-dev"
+    },
+    "uat": {
+      "prefix": "voicemail/uat/",
+      "rule_name": "wav-upload-rule-uat",
+      "lambda_arn": "arn:aws:lambda:us-east-1:123456789012:function:email_lambda-uat"
+    },
+    "prod": {
+      "prefix": "voicemail/prod/",
+      "rule_name": "wav-upload-rule-prod",
+      "lambda_arn": "arn:aws:lambda:us-east-1:123456789012:function:email_lambda-prod"
+    }
+  }
+}
