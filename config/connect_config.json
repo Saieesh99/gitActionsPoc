@@ -1,0 +1,18 @@
+{
+  "instance_id": "125d4a4f-946b-4b2d-aae7-7f7ee3be569c",
+  "region": "us-east-1",
+  "environments": {
+    "dev": {
+      "flow_name": "test-dev",
+      "flow_file": "connect/dev/contact_flow.json"
+    },
+    "uat": {
+      "flow_name": "test-uat",
+      "flow_file": "connect/uat/contact_flow.json"
+    },
+    "prod": {
+      "flow_name": "test-prod",
+      "flow_file": "connect/prod/contact_flow.json"
+    }
+  }
+}
