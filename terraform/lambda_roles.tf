@@ -110,5 +110,5 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
 resource "aws_iam_role_policy_attachment" "attach_lambda_dynamodb_policy" {
   count      = var.create_role ? 1 : 0
   role       = aws_iam_role.lambda_exec_role[0].name
-  policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
+  policy_arn = aws_iam_policy.lambda_dynamodb_policy[0].arn
 }
