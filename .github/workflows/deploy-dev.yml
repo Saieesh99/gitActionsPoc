@@ -13,7 +13,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
       AWS_REGION : us-east-1
-      ENV: ${{ github.event.inputs.env }}
+      ENV: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -55,14 +55,14 @@ jobs:
         working-directory: terraform
         run: terraform validate
 
-      - name: Terraform Apply
-        run: |
-          echo ${{ github.event }}
-          echo ${{ github.event.inputs }}
-          echo "Using env = $ENV"
-          terraform apply -auto-approve -var-file=${ENV}.tfvars
-        env:
-          ENV: ${{ github.event.inputs.env }}
+      # - name: Terraform Apply
+      #   run: |
+      #     echo ${{ github.event }}
+      #     echo ${{ github.event.inputs }}
+      #     echo "Using env = $ENV"
+      #     terraform apply -auto-approve -var-file=${ENV}.tfvars
+      #   env:
+      #     ENV: ${{ github.event.inputs.env }}
 
       - name: 🛠️ Terraform Plan
         working-directory: terraform
