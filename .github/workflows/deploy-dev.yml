@@ -55,6 +55,13 @@ jobs:
         working-directory: terraform
         run: terraform validate
 
+      - name: Terraform Apply
+        run: |
+          echo "Using env = $ENV"
+          terraform apply -auto-approve -var-file=${ENV}.tfvars
+        env:
+          ENV: ${{ github.event.inputs.env }}
+
       - name: 🛠️ Terraform Plan
         working-directory: terraform
         run: terraform apply -auto-approve -var-file=${ENV}.tfvars
