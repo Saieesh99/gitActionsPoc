@@ -20,7 +20,6 @@ resource "aws_iam_role_policy_attachment" "email_lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-
 resource "aws_iam_policy" "email_lambda_policy" {
   count      = var.create_role ? 1 : 0
   name = "email-lambda-policy-${var.environment}"
@@ -80,4 +79,36 @@ resource "aws_iam_role_policy_attachment" "basic_execution" {
   count      = var.create_role ? 1 : 0
   role       = aws_iam_role.lambda_exec_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_policy" "lambda_dynamodb_policy" {
+  count      = var.create_role ? 1 : 0
+  name = "lambda-dynamodb-access-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:Scan",
+          "dynamodb:Query",
+          "dynamodb:BatchWriteItem",
+          "dynamodb:BatchGetItem",
+          "dynamodb:DescribeTable"
+        ],
+        Resource = "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_id}:table/flow-tracking-${var.environment}"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_lambda_dynamodb_policy" {
+  count      = var.create_role ? 1 : 0
+  role       = aws_iam_role.lambda_dynamodb_role[0].name
+  policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
 }

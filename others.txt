@@ -111,3 +111,8 @@ terraform plan -destroy -var-file=dev.tfvars
 terraform apply -destroy -var-file=dev.tfvars
 
 zip -r ../lambda/dev/lambda_email/lambda_email.zip .
+
+
+
+cleanup
+python cleanup_resources.py cleanup_config.json dev

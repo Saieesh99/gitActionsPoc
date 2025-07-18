@@ -1,0 +1,22 @@
+{
+  "dev": {
+    "iam_roles": [
+      { "name": "my-dev-role", "tf": "aws_iam_role.my-dev-role" }
+    ],
+    "iam_policies": [
+      { "name": "my-dev-policy", "tf": "aws_iam_policy.my-dev-policy" }
+    ],
+    "s3_buckets": [
+      { "name": "my-dev-bucket", "tf": "aws_s3_bucket.my-dev-bucket" }
+    ],
+    "lambda_functions": [
+      { "name": "dev-lambda-1" }
+    ],
+    "eventbridge_rules": [
+      { "name": "dev-rule-1" }
+    ],
+    "lex_bots": [
+      { "name": "DevBot" }
+    ]
+  }
+}
