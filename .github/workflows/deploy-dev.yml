@@ -13,7 +13,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
       AWS_REGION : us-east-1
-      BUCKET_NAME: voicemail-bucket-${{ github.event.inputs.env }}
+      ENV: ${{ github.event.inputs.env }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -57,20 +57,20 @@ jobs:
 
       - name: 🛠️ Terraform Plan
         working-directory: terraform
-        run: terraform apply -auto-approve -var-file=${{ github.event.inputs.env }}.tfvars
+        run: terraform apply -auto-approve -var-file=${ENV}.tfvars
 
       - name: 🛠️ Terraform Apply
         working-directory: terraform
-        run: terraform apply -auto-approve -var-file=${{ github.event.inputs.env }}.tfvars -input=false -no-color -parallelism=10
+        run: terraform apply -auto-approve -var-file=${ENV}.tfvars -input=false -no-color -parallelism=10
 
       - name: 📦 Deploy Lambda Functions
-        run: python deploy/deploy_lambda.py --env ${{ github.event.inputs.env }}
+        run: python deploy/deploy_lambda.py --env ${ENV}
 
       - name: 📦 Deploy LexBot
-        run: python deploy/import_or_create_lex_bot.py --env ${{ github.event.inputs.env }}
+        run: python deploy/import_or_create_lex_bot.py --env ${ENV}
 
       - name: 📦 Deploy Eventbridge
-        run: python deploy/deploy_eventbridge.py --bot bot1 --env ${{ github.event.inputs.env }}
+        run: python deploy/deploy_eventbridge.py --bot bot1 --env ${ENV}
 
       # - name: Terraform Plan
       #   working-directory: terraform
@@ -88,7 +88,7 @@ jobs:
       #   run: python deploy/import_or_create_lex_bot.py --bot bot1 --env dev
 
       - name: Deploy Connect Flow
-        run: python deploy/deploy_connect.py --env ${{ github.event.inputs.env }}
+        run: python deploy/deploy_connect.py --env ${ENV}
 
       - name: Upload failure logs
         if: failure()
