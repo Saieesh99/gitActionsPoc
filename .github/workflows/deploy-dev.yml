@@ -2,7 +2,7 @@ name: Deploy to Dev
 
 on:
   push:
-    branches: [ donotdev ]
+    branches: [ dev ]
 
 jobs:
   deploy-dev:
@@ -33,19 +33,19 @@ jobs:
         with:
           terraform_version: 1.12.2
 
-      - name: 🔐 Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+      # - name: 🔐 Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v3
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ env.AWS_REGION }}
 
-      - name: 🪣 Deploy S3 Bucket
-        run: |
-          python deploy/deploy_s3_bucket.py
-        env:
-          BUCKET_NAME: ${{ env.BUCKET_NAME }}
-          AWS_REGION: ${{ env.AWS_REGION }}
+      # - name: 🪣 Deploy S3 Bucket
+      #   run: |
+      #     python deploy/deploy_s3_bucket.py
+      #   env:
+      #     BUCKET_NAME: ${{ env.BUCKET_NAME }}
+      #     AWS_REGION: ${{ env.AWS_REGION }}
 
       - name: Terraform Init ✅
         working-directory: terraform
@@ -55,37 +55,40 @@ jobs:
         working-directory: terraform
         run: terraform validate
 
-      - name: 🛠️ Terraform Apply IAM + Lambda Shell
-        working-directory: infra
-        run: |
-          terraform apply -auto-approve -var-file=${{ github.event.inputs.env }}.tfvars
-
-      - name: 📦 Deploy Lambda Function (Email Sender)
-        run: |
-          python deploy/deploy_lambda.py
-        env:
-          LAMBDA_NAME: voicemail_email_lambda
-          SES_FROM: ${{ secrets.SES_FROM }}
-          SES_TO: ${{ secrets.SES_TO }}
-          AWS_REGION: ${{ env.AWS_REGION }}
-
-      - name: Terraform Plan
+      - name: 🛠️ Terraform Plan
         working-directory: terraform
-        run: terraform plan -var-file="dev.tfvars"
+        run: terraform apply -auto-approve -var-file=${{ github.event.inputs.env }}.tfvars
 
-      - name: Terraform Apply
+      - name: 🛠️ Terraform Apply
         working-directory: terraform
-        run: terraform apply -auto-approve -var-file="dev.tfvars" -var="create_role=false" -input=false -no-color -parallelism=10
+        run: terraform apply -auto-approve -var-file=${{ github.event.inputs.env }}.tfvars -input=false -no-color -parallelism=10
 
-      - name: Deploy Lambda
-        run: bash deploy/deploy_lambda.sh dev
+      - name: 📦 Deploy Lambda Functions
+        run: python deploy/deploy_lambda.py --env ${{ github.event.inputs.env }}
 
-      - name: Deploy Lex Bot from ZIP (if available)
-        shell: bash
-        run: python deploy/import_or_create_lex_bot.py --bot bot1 --env dev
+      - name: 📦 Deploy LexBot
+        run: python deploy/import_or_create_lex_bot.py --env ${{ github.event.inputs.env }}
+
+      - name: 📦 Deploy Eventbridge
+        run: python deploy/deploy_eventbridge.py --bot bot1 --env ${{ github.event.inputs.env }}
+
+      # - name: Terraform Plan
+      #   working-directory: terraform
+      #   run: terraform plan -var-file="dev.tfvars"
+
+      # - name: Terraform Apply
+      #   working-directory: terraform
+      #   run: terraform apply -auto-approve -var-file="dev.tfvars" -var="create_role=false" -input=false -no-color -parallelism=10
+
+      # - name: Deploy Lambda
+      #   run: bash deploy/deploy_lambda.sh dev
+
+      # - name: Deploy Lex Bot from ZIP
+      #   shell: bash
+      #   run: python deploy/import_or_create_lex_bot.py --bot bot1 --env dev
 
       - name: Deploy Connect Flow
-        run: python deploy/deploy_connect.py --env dev
+        run: python deploy/deploy_connect.py --env ${{ github.event.inputs.env }}
 
       - name: Upload failure logs
         if: failure()

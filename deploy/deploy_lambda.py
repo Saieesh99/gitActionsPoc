@@ -12,19 +12,28 @@ def zip_lambda(source_dir, zip_path):
                 arcname = os.path.relpath(full_path, start=source_dir)
                 zf.write(full_path, arcname)
 
-def deploy_lambda(lambda_client, function_name, zip_path, role_arn):
+def deploy_lambda(lambda_client, function_name, zip_path, role_arn, environment_variables):
     with open(zip_path, 'rb') as f:
         code_bytes = f.read()
 
     try:
         lambda_client.get_function(FunctionName=function_name)
         print(f"🔁 Updating Lambda: {function_name}")
+
         lambda_client.update_function_code(
             FunctionName=function_name,
             ZipFile=code_bytes
         )
+
+        if environment_variables:
+            lambda_client.update_function_configuration(
+                FunctionName=function_name,
+                Environment={'Variables': environment_variables}
+            )
+
     except lambda_client.exceptions.ResourceNotFoundException:
         print(f"➕ Creating Lambda: {function_name}")
+
         lambda_client.create_function(
             FunctionName=function_name,
             Runtime='python3.12',
@@ -33,8 +42,10 @@ def deploy_lambda(lambda_client, function_name, zip_path, role_arn):
             Code={'ZipFile': code_bytes},
             Timeout=60,
             MemorySize=128,
-            Publish=True
+            Publish=True,
+            Environment={'Variables': environment_variables} if environment_variables else {}
         )
+
 
 def main(env):
     region = os.environ.get("AWS_REGION", "us-east-1")
@@ -55,7 +66,8 @@ def main(env):
             lambda_client=lambda_client,
             function_name=f"{fn['name']}-{env}",
             zip_path=zip_path,
-            role_arn=fn['role_arn']
+            role_arn=fn['role_arn'],
+            environment_variables=fn.get('environment_variables', {})
         )
 
 if __name__ == "__main__":
