@@ -25,11 +25,15 @@ def deploy_lambda(lambda_client, function_name, zip_path, role_arn, environment_
             ZipFile=code_bytes
         )
 
+        print(f"🔁 Updating Lambda: reached here")
+
         if environment_variables:
+            print(f"🔁 Updating Lambda: reached here2")
             lambda_client.update_function_configuration(
                 FunctionName=function_name,
                 Environment={'Variables': environment_variables}
             )
+            print(f"🔁 Updating Lambda: reached here3")
 
     except lambda_client.exceptions.ResourceNotFoundException:
         print(f"➕ Creating Lambda: {function_name}")
