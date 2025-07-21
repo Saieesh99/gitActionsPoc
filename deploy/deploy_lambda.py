@@ -3,6 +3,8 @@ import zipfile
 import boto3
 import argparse
 import json
+import time
+from botocore.exceptions import ClientError
 
 def zip_lambda(source_dir, zip_path):
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
@@ -11,6 +13,24 @@ def zip_lambda(source_dir, zip_path):
                 full_path = os.path.join(root, file)
                 arcname = os.path.relpath(full_path, start=source_dir)
                 zf.write(full_path, arcname)
+
+def wait_and_update_config(lambda_client, function_name, environment_variables, max_retries=10, wait_seconds=5):
+    for attempt in range(max_retries):
+        try:
+            print(f"🔁 Attempt {attempt + 1}: Updating environment variables...")
+            lambda_client.update_function_configuration(
+                FunctionName=function_name,
+                Environment={'Variables': environment_variables}
+            )
+            print("✅ Environment variables updated successfully.")
+            return
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'ResourceConflictException':
+                print("⏳ Update in progress. Waiting...")
+                time.sleep(wait_seconds)
+            else:
+                raise e
+    raise Exception("❌ Failed to update environment variables after multiple retries.")
 
 def deploy_lambda(lambda_client, function_name, zip_path, role_arn, environment_variables):
     with open(zip_path, 'rb') as f:
@@ -25,19 +45,15 @@ def deploy_lambda(lambda_client, function_name, zip_path, role_arn, environment_
             ZipFile=code_bytes
         )
 
-        print(f"🔁 Updating Lambda: reached here")
+        print(f"📦 Code update successful. Waiting for Lambda to be ready...")
+        lambda_client.get_waiter('function_updated').wait(FunctionName=function_name)
+        print(f"✅ Lambda is ready.")
 
         if environment_variables:
-            print(f"🔁 Updating Lambda: reached here2")
-            lambda_client.update_function_configuration(
-                FunctionName=function_name,
-                Environment={'Variables': environment_variables}
-            )
-            print(f"🔁 Updating Lambda: reached here3")
+            wait_and_update_config(lambda_client, function_name, environment_variables)
 
     except lambda_client.exceptions.ResourceNotFoundException:
         print(f"➕ Creating Lambda: {function_name}")
-
         lambda_client.create_function(
             FunctionName=function_name,
             Runtime='python3.12',
@@ -49,7 +65,6 @@ def deploy_lambda(lambda_client, function_name, zip_path, role_arn, environment_
             Publish=True,
             Environment={'Variables': environment_variables} if environment_variables else {}
         )
-
 
 def main(env):
     region = os.environ.get("AWS_REGION", "us-east-1")
