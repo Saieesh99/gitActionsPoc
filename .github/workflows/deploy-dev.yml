@@ -76,10 +76,10 @@ jobs:
         run: python deploy/deploy_lambda.py --env ${ENV}
 
       - name: 📦 Deploy LexBot
-        run: python deploy/import_or_create_lex_bot.py --env ${ENV}
+        run: python deploy/import_or_create_lex_bot.py --bot bot1 --env ${ENV}
 
       - name: 📦 Deploy Eventbridge
-        run: python deploy/deploy_eventbridge.py --bot bot1 --env ${ENV}
+        run: python deploy/deploy_eventbridge.py --env ${ENV}
 
       # - name: Terraform Plan
       #   working-directory: terraform
