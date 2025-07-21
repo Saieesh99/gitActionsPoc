@@ -3,9 +3,11 @@ provider "aws" {
 }
 
 module "s3_bucket" {
-  source = "./modules/s3"  # Optional: or define inline
-  create_role = var.create_role
+  source      = "./modules/s3"
   bucket_name = var.bucket_name
+  create_role = var.create_role
+
+  count       = var.create_role ? 1 : 0
 }
 
 # resource "aws_lambda_function" "email_lambda" {
