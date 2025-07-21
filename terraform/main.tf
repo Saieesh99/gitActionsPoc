@@ -4,6 +4,7 @@ provider "aws" {
 
 module "s3_bucket" {
   source = "./modules/s3"  # Optional: or define inline
+  create_role = var.create_role
   bucket_name = var.bucket_name
 }
 
