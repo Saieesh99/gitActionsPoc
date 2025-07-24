@@ -1,0 +1,120 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "5df5e701-6e44-4ba7-8fc9-31f5d29bee10",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": 50,
+      "y": 81
+    },
+    "ActionMetadata": {
+      "b354a13e-f1ef-44e0-9d43-1a4dc7d00db8": {
+        "position": {
+          "x": 913,
+          "y": 70
+        }
+      },
+      "5df5e701-6e44-4ba7-8fc9-31f5d29bee10": {
+        "position": {
+          "x": 67,
+          "y": 345
+        }
+      },
+      "e120626d-697b-4fec-bbb7-05dc4a86ab0d": {
+        "position": {
+          "x": 507,
+          "y": 53
+        }
+      },
+      "0c50dd1a-60c0-4832-a6af-2e5d543d2864": {
+        "position": {
+          "x": 476,
+          "y": 377
+        }
+      },
+      "2edc6c82-0812-4518-9962-985e8788a9aa": {
+        "position": {
+          "x": 770,
+          "y": 381
+        }
+      }
+    },
+    "Annotations": [],
+    "name": "test-dev",
+    "description": "test-dev updated flow created via deploy script",
+    "type": "contactFlow",
+    "status": "published",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Parameters": {},
+      "Identifier": "b354a13e-f1ef-44e0-9d43-1a4dc7d00db8",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "Text": "test prompt"
+      },
+      "Identifier": "5df5e701-6e44-4ba7-8fc9-31f5d29bee10",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "0c50dd1a-60c0-4832-a6af-2e5d543d2864",
+        "Errors": [
+          {
+            "NextAction": "0c50dd1a-60c0-4832-a6af-2e5d543d2864",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "Test call"
+      },
+      "Identifier": "e120626d-697b-4fec-bbb7-05dc4a86ab0d",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "b354a13e-f1ef-44e0-9d43-1a4dc7d00db8",
+        "Errors": [
+          {
+            "NextAction": "b354a13e-f1ef-44e0-9d43-1a4dc7d00db8",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "test prompt second"
+      },
+      "Identifier": "0c50dd1a-60c0-4832-a6af-2e5d543d2864",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "2edc6c82-0812-4518-9962-985e8788a9aa",
+        "Errors": [
+          {
+            "NextAction": "2edc6c82-0812-4518-9962-985e8788a9aa",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "test third "
+      },
+      "Identifier": "2edc6c82-0812-4518-9962-985e8788a9aa",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "e120626d-697b-4fec-bbb7-05dc4a86ab0d",
+        "Errors": [
+          {
+            "NextAction": "e120626d-697b-4fec-bbb7-05dc4a86ab0d",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    }
+  ]
+}

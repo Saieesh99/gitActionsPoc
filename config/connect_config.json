@@ -3,16 +3,44 @@
   "region": "us-east-1",
   "environments": {
     "dev": {
-      "flow_name": "test-dev",
-      "flow_file": "connect/dev/contact_flow.json"
+      "flows": [
+        {
+          "flow_name": "test-dev-flow1",
+          "flow_file": "connect/dev/contact_flow1.json"
+        },
+        {
+          "flow_name": "test-dev-flow2",
+          "flow_file": "connect/dev/contact_flow2.json"
+        }
+      ]
+    },
+    "qa": {
+      "flows": [
+        {
+          "flow_name": "test-qa-flow1",
+          "flow_file": "connect/qa/contact_flow1.json"
+        },
+        {
+          "flow_name": "test-qa-flow2",
+          "flow_file": "connect/qa/contact_flow2.json"
+        }
+      ]
     },
     "uat": {
-      "flow_name": "test-uat",
-      "flow_file": "connect/uat/contact_flow.json"
+      "flows": [
+        {
+          "flow_name": "test-uat",
+          "flow_file": "connect/uat/contact_flow.json"
+        }
+      ]
     },
     "prod": {
-      "flow_name": "test-prod",
-      "flow_file": "connect/prod/contact_flow.json"
+      "flows": [
+        {
+          "flow_name": "test-prod",
+          "flow_file": "connect/prod/contact_flow.json"
+        }
+      ]
     }
   }
 }

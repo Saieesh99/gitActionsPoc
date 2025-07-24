@@ -1,7 +1,9 @@
 {
   "dev": {
     "iam_roles": [
-      { "name": "my-dev-role", "tf": "aws_iam_role.my-dev-role" }
+      { "name": "email-lambda-role-dev", "tf": "email-lambda-role-dev" },
+      { "name": "connect-lambda-exec-role-dev", "tf": "connect-lambda-exec-role-dev" },
+      { "name": "lex-exec-role-dev", "tf": "lex-exec-role-dev" }
     ],
     "iam_policies": [
       { "name": "my-dev-policy", "tf": "aws_iam_policy.my-dev-policy" }
