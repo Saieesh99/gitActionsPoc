@@ -39,6 +39,9 @@ print("🔍 Fetching existing contact flows...")
 response = client.list_contact_flows(InstanceId=instance_id)
 existing_flows = {f["Name"]: f["Id"] for f in response.get("ContactFlowSummaryList", [])}
 
+# ✅ Track deployed flow IDs
+deployed_flows = {}
+
 # ✅ Deploy each flow
 for flow in flows:
     flow_name = flow["flow_name"]
@@ -68,6 +71,19 @@ for flow in flows:
             Content=content,
             Description=f"{flow_name} flow created via script"
         )
-        print(f"✅ Created contact flow ID: {result['ContactFlowId']}")
+        flow_id = result['ContactFlowId']
+        print(f"✅ Created contact flow ID: {flow_id}")
 
+    # Save to deployed flows dict
+    deployed_flows[flow_name] = flow_id
+
+# ✅ Write output to file
+output_dir = "output"
+os.makedirs(output_dir, exist_ok=True)
+output_file = os.path.join(output_dir, f"{env}_callflow_ids.json")
+
+with open(output_file, 'w') as f:
+    json.dump(deployed_flows, f, indent=2)
+
+print(f"📝 Contact flow IDs written to: {output_file}")
 print(f"🚀 Contact flow deployment complete for '{env}'.")

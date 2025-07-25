@@ -1,0 +1,44 @@
+{
+  "instance_id": "125d4a4f-946b-4b2d-aae7-7f7ee3be569c",
+  "region": "us-east-1",
+  "environments": {
+    "dev": {
+      "hours_of_operation": [
+        {
+          "name": "SalesHours",
+          "description": "Sales time 9-6",
+          "time_zone": "Asia/Kolkata",
+          "tags": {
+            "Env": "Dev",
+            "Program": "AVEED",
+            "Product": "Sales"
+          },
+          "config": [
+            {
+              "day": "MONDAY",
+              "start_time": { "hours": 9, "minutes": 0 },
+              "end_time": { "hours": 18, "minutes": 0 }
+            }
+          ]
+        },
+        {
+          "name": "SupportHours",
+          "description": "Support time 10-5",
+          "time_zone": "Asia/Kolkata",
+          "tags": {
+            "Env": "Dev",
+            "Program": "REMS",
+            "Product": "Support"
+          },
+          "config": [
+            {
+              "day": "MONDAY",
+              "start_time": { "hours": 10, "minutes": 0 },
+              "end_time": { "hours": 17, "minutes": 0 }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "instance_id": "125d4a4f-946b-4b2d-aae7-7f7ee3be569c",
+  "region": "us-east-1",
+  "environments": {
+    "dev": {
+      "queues": [
+        {
+          "name": "BillingQueue-DEV",
+          "description": "Handles billing inquiries",
+          "hours_of_operation": "SalesHours",
+          "max_contacts": 10,
+          "outbound_caller_config": {
+            "OutboundCallerIdName": "SupportLine",
+            "OutboundCallerIdNumberId": "22719f51-9262-41cc-af10-3e231f500b3a",
+            "OutboundFlowId": "ae7674b1-070f-4196-a9a2-326fca220fd3"
+          },
+          "tags": {
+            "Env": "Dev",
+            "Program": "AVEED"
+          }
+        },
+        {
+          "name": "TechSupportQueue-DEV",
+          "description": "Handles tech support calls",
+          "hours_of_operation": "SupportHours",
+          "max_contacts": 15,
+          "outbound_caller_config": {
+            "OutboundCallerIdName": "SupportTech",
+            "OutboundCallerIdNumberId": "22719f51-9262-41cc-af10-3e231f500b3a",
+            "OutboundFlowId": "ae7674b1-070f-4196-a9a2-326fca220fd3"
+          },
+          "tags": {
+            "Env": "Dev",
+            "Program": "Rems"
+          }
+        }
+      ]
+    },
+    "uat": {
+      "queues": []
+    },
+    "prod": {
+      "queues": []
+    }
+  }
+}
