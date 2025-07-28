@@ -57,6 +57,9 @@ for page in paginator.paginate(InstanceId=instance_id):
         except Exception as e:
             print(f"⚠️ Failed to describe queue {queue_id}: {e}")
 
+# ✅ Track created or updated queue IDs
+created_or_updated_queues = {}
+
 # ✅ Create or update queues
 for q in queue_configs:
     queue_name = q["name"]
@@ -67,7 +70,7 @@ for q in queue_configs:
 
     outbound_cfg = q.get("outbound_caller_config", {})
     raw_flow_key = outbound_cfg.get("OutboundFlowId", "")
-    print("instance_id ",instance_id)
+    print("instance_id ", instance_id)
 
     outbound_caller_config = {
         "OutboundCallerIdName": outbound_cfg.get("OutboundCallerIdName", ""),
@@ -80,8 +83,8 @@ for q in queue_configs:
         print(f"❌ HOO '{hoo_name}' not found in mapping file.")
         continue
 
-    print("queue_name ",queue_name)
-    print("existing_queues ",existing_queues)
+    print("queue_name ", queue_name)
+    print("existing_queues ", existing_queues)
     if queue_name in existing_queues:
         queue_id = existing_queues[queue_name]
         print(f"🔄 Updating queue: {queue_name} (ID: {queue_id})")
@@ -117,6 +120,8 @@ for q in queue_configs:
                 queue_arn = f"arn:aws:connect:{region}:{account_id}:instance/{instance_id}/queue/{queue_id}"
                 client.tag_resource(resourceArn=queue_arn, tags=tags)
 
+            created_or_updated_queues[queue_name] = queue_id
+
         except Exception as e:
             print(f"❌ Error updating queue '{queue_name}': {e}")
     else:
@@ -131,12 +136,23 @@ for q in queue_configs:
                 MaxContacts=max_contacts,
                 Tags=tags
             )
-            print(f"✅ Created queue ID: {response['QueueId']}")
+            queue_id = response['QueueId']
+            created_or_updated_queues[queue_name] = queue_id
+            print(f"✅ Created queue ID: {queue_id}")
         except client.exceptions.InvalidParameterException as e:
             print(f"❌ InvalidParameterException while creating queue '{queue_name}': {e}")
         except client.exceptions.DuplicateResourceException as e:
             print(f"⚠️ Queue '{queue_name}' already exists (DuplicateResourceException).")
         except Exception as e:
             print(f"❌ Unexpected error while creating queue '{queue_name}': {str(e)}")
+
+# ✅ Save created or updated queue IDs
+output_queue_path = f"output/{env}_queue_ids.json"
+try:
+    with open(output_queue_path, "w") as f:
+        json.dump(created_or_updated_queues, f, indent=2)
+    print(f"📝 Saved queue IDs to {output_queue_path}")
+except Exception as e:
+    print(f"❌ Failed to save queue IDs to file: {e}")
 
 print(f"🚀 Queue deployment complete for '{env}'.")

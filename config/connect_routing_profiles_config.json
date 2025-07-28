@@ -1,0 +1,46 @@
+{
+  "instance_id": "125d4a4f-946b-4b2d-aae7-7f7ee3be569c",
+  "region": "us-east-1",
+  "environments": {
+    "dev": {
+      "routing_profiles": [
+        {
+          "name": "SupportProfile-DEV",
+          "description": "Support team routing profile",
+          "default_queue": "BillingQueue-DEV",
+          "queues": [
+            { "queue_name": "BillingQueue-DEV", "priority": 1, "delay": 10, "channel": ["VOICE"] }
+          ],
+          "tags": {
+            "Environment": "dev",
+            "Team": "Support"
+          }
+        },
+        {
+          "name": "SalesProfile-DEV",
+          "description": "Sales team routing profile",
+          "default_queue": "TechSupportQueue-DEV",
+          "queues": [
+            { "queue_name": "TechSupportQueue-DEV", "priority": 1, "delay": 10, "channel": ["VOICE"] }
+          ],
+          "tags": {
+            "Environment": "dev",
+            "Team": "Sales"
+          }
+        },
+        {
+          "name": "BillingProfile-DEV",
+          "description": "Billing team routing profile",
+          "default_queue": "TechSupportQueue-DEV",
+          "queues": [
+            { "queue_name": "TechSupportQueue-DEV", "priority": 1, "delay": 0 , "channel": ["VOICE", "CHAT"]}
+          ],
+          "tags": {
+            "Environment": "dev",
+            "Team": "Billing"
+          }
+        }
+      ]
+    }
+  }
+}

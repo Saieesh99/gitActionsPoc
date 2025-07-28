@@ -1,0 +1,40 @@
+{
+  "instance_id": "125d4a4f-946b-4b2d-aae7-7f7ee3be569c",
+  "region": "us-east-1",
+  "environments": {
+    "dev": {
+      "agent_statuses": [
+        {
+          "name": "Break-DEV",
+          "description": "Agent is on break",
+          "state": "ENABLED",
+          "display_order": 1,
+          "tags": {
+            "env": "dev",
+            "type": "break"
+          }
+        },
+        {
+          "name": "Training-DEV",
+          "description": "Agent in traininggg",
+          "state": "ENABLED",
+          "display_order": 2,
+          "tags": {
+            "env": "dev",
+            "type": "training"
+          }
+        },
+        {
+          "name": "Training2-DEV",
+          "description": "Agent in traininggg",
+          "state": "ENABLED",
+          "display_order": 2,
+          "tags": {
+            "env": "dev",
+            "type": "training"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -123,3 +123,5 @@ order
 callflow
 hours of operation
 queue --> edit config with did(outbound flow)
+routing profile
+agentstatus
