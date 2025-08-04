@@ -85,14 +85,39 @@ def delete_eventbridge_rule(rule_name):
     except ClientError as e:
         print(f"Error deleting EventBridge rule {rule_name}: {e}")
 
+
+def get_all_bots():
+    lex = boto3.client('lexv2-models')
+    all_bots = []
+
+    next_token = None
+    while True:
+        if next_token:
+            response = lex.list_bots(nextToken=next_token, maxResults=50)
+        else:
+            response = lex.list_bots(maxResults=50)
+
+        bots = response.get('botSummaries', [])
+        all_bots.extend(bots)
+
+        next_token = response.get('nextToken')
+        if not next_token:
+            break
+
+    return all_bots
+
 # ===== Lex Bot =====
 def delete_lex_bot(bot_name):
-    lex = boto3.client('lex-models')
+    lex = boto3.client('lexv2-models')
+    
     try:
-        bots = lex.get_bots()['bots']
+        bots = get_all_bots()
+        print(f"Total bots found: {len(bots)}")
+
+        # print("bots ",bots)
         for bot in bots:
-            if bot['name'] == bot_name:
-                lex.delete_bot(name=bot_name)
+            if bot['botName'] == bot_name:
+                lex.delete_bot(botId=bot['botId'], skipResourceInUseCheck=True)
                 print(f"Lex bot deleted: {bot_name}")
                 return
         print(f"Lex bot not found: {bot_name}")
