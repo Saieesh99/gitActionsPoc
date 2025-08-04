@@ -1,0 +1,36 @@
+{
+  "instance_id": "125d4a4f-946b-4b2d-aae7-7f7ee3be569c",
+  "region": "us-east-1",
+  "environments": {
+    "dev": {
+      "security_profiles": [
+        {
+          "name": "Supervisor-DEV",
+          "description": "Supervisor role with limited safe permissions",
+          "permissions": [
+            "BasicAgentAccess",
+            "ContactSearch",
+            "ViewContactTraceRecords",
+            "OutboundCallAccess"
+          ],
+          "tags": {
+            "Environment": "dev",
+            "Team": "Supervisors"
+          }
+        },
+        {
+          "name": "QA-DEV",
+          "description": "QA profile with contact viewing",
+          "permissions": [
+            "ContactSearch",
+            "ViewContactTraceRecords"
+          ],
+          "tags": {
+            "Environment": "dev",
+            "Team": "QA"
+          }
+        }
+      ]
+    }
+  }
+}
