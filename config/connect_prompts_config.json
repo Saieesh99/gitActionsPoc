@@ -5,27 +5,35 @@
     "dev": {
       "s3_bucket": "mkvmbucket",
       "prompts": {
-        "general": {
+        "WelcomePrompt": {
+          "s3_key": "general/5b306064-cfcd-4210-a8ec-ad315fe1eb7f_20250805T10_18_UTC.wav",
           "tags": {
             "Category": "General",
             "Environment": "dev"
           }
         },
-        "system": {
+        "WelcomePrompt2": {
+          "s3_key": "general/b63d46e5-9f6d-4e89-bbc2-49faade3e599_20250805T07_25_UTC.wav",
+          "tags": {
+            "Category": "General",
+            "Environment": "dev"
+          }
+        },
+        "WelcomePrompt3": {
+          "s3_key": "general/fd68611f-a5e1-48a2-90bb-49d99617965b_20250805T09_29_UTC.wav",
+          "tags": {
+            "Category": "General",
+            "Environment": "dev"
+          }
+        },
+        "ErrorPrompt": {
+          "s3_key": "system/fd68611f-a5e1-48a2-90bb-49d99617965b_20250805T09_29_UTC.wav",
           "tags": {
             "Category": "System",
             "Environment": "dev"
           }
         }
       }
-    },
-    "uat": {
-      "s3_bucket": "connect-prompts-uat",
-      "prompts": {}
-    },
-    "prod": {
-      "s3_bucket": "connect-prompts-prod",
-      "prompts": {}
     }
   }
 }
