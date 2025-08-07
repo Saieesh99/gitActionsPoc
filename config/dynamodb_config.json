@@ -1,0 +1,54 @@
+{
+  "instance_id": "125d4a4f-946b-4b2d-aae7-7f7ee3be569c",
+  "region": "us-east-1",
+  "environments": {
+    "dev": {
+      "tables": [
+        {
+          "name": "WeatherRulesTable",
+          "billing_mode": "PAY_PER_REQUEST",
+          "attributes": [
+            { "AttributeName": "Program_name", "AttributeType": "S" }
+          ],
+          "key_schema": [
+            { "AttributeName": "Program_name", "KeyType": "HASH" }
+          ],
+          "tags": {
+            "Environment": "dev",
+            "Type": "Rules"
+          }
+        },
+        {
+          "name": "HolidayTable",
+          "billing_mode": "PAY_PER_REQUEST",
+          "attributes": [
+            { "AttributeName": "Holiday", "AttributeType": "S" },
+            { "AttributeName": "Date", "AttributeType": "S" }
+          ],
+          "key_schema": [
+            { "AttributeName": "Holiday", "KeyType": "HASH" },
+            { "AttributeName": "Date", "KeyType": "RANGE" }
+          ],
+          "tags": {
+            "Environment": "dev",
+            "Type": "Calendar"
+          }
+        },
+        {
+          "name": "CallTrackingTable",
+          "billing_mode": "PAY_PER_REQUEST",
+          "attributes": [
+            { "AttributeName": "ContactId", "AttributeType": "S" }
+          ],
+          "key_schema": [
+            { "AttributeName": "ContactId", "KeyType": "HASH" }
+          ],
+          "tags": {
+            "Environment": "dev",
+            "Type": "Tracking"
+          }
+        }
+      ]
+    }
+  }
+}
