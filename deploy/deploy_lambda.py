@@ -32,7 +32,7 @@ def wait_and_update_config(lambda_client, function_name, environment_variables, 
                 raise e
     raise Exception("❌ Failed to update environment variables after multiple retries.")
 
-def deploy_lambda(lambda_client, function_name, zip_path, role_arn, environment_variables):
+def deploy_lambda(lambda_client, function_name, zip_path, role_arn, environment_variables, tags=None):
     with open(zip_path, 'rb') as f:
         code_bytes = f.read()
 
@@ -52,6 +52,13 @@ def deploy_lambda(lambda_client, function_name, zip_path, role_arn, environment_
         if environment_variables:
             wait_and_update_config(lambda_client, function_name, environment_variables)
 
+        if tags:
+            print(f"🏷️ Tagging Lambda: {function_name}")
+            lambda_client.tag_resource(
+                Resource=f"arn:aws:lambda:{lambda_client.meta.region_name}:{boto3.client('sts').get_caller_identity()['Account']}:function:{function_name}",
+                Tags=tags
+            )
+
     except lambda_client.exceptions.ResourceNotFoundException:
         print(f"➕ Creating Lambda: {function_name}")
         lambda_client.create_function(
@@ -63,8 +70,14 @@ def deploy_lambda(lambda_client, function_name, zip_path, role_arn, environment_
             Timeout=60,
             MemorySize=128,
             Publish=True,
-            Environment={'Variables': environment_variables} if environment_variables else {}
+            Environment={'Variables': environment_variables} if environment_variables else {},
+            Tags=tags if tags else {}
         )
+
+        print("⏳ Waiting for Lambda creation to complete...")
+        lambda_client.get_waiter('function_active').wait(FunctionName=function_name)
+        print(f"✅ Lambda {function_name} is now active.")
+
 
 def main(env):
     region = os.environ.get("AWS_REGION", "us-east-1")
@@ -86,8 +99,10 @@ def main(env):
             function_name=f"{fn['name']}-{env}",
             zip_path=zip_path,
             role_arn=fn['role_arn'],
-            environment_variables=fn.get('environment_variables', {})
+            environment_variables=fn.get('environment_variables', {}),
+            tags=fn.get('tags')
         )
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

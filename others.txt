@@ -105,7 +105,11 @@ lex-exec-role-uat
 
 
 terraform apply -auto-approve -var-file=${{ github.event.inputs.env }}.tfvars
-terraform apply -auto-approve -var-file=dev.tfvars
+terraform apply -auto-approve -var-file=dev.tfvars   ===> main
+
+terraform plan -auto-approve -var-file=dev.tfvars
+
+terraform destroy -auto-approve  -var-file=dev.tfvars
 
 terraform plan -destroy -var-file=dev.tfvars
 terraform apply -destroy -var-file=dev.tfvars

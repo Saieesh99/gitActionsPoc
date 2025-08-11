@@ -7,6 +7,25 @@
       "environment_variables": {
         "SES_FROM": "saieesh03homkhandi@gmail.com",
         "SES_TO": "saieeshhomkhandi@gmail.com"
+      },
+      "tags": {
+        "Environment": "dev",
+        "Owner": "Saieesh",
+        "Service": "Notification"
+      }
+    },
+    {
+      "name": "email_lambda",
+      "path": "lambda/dev/email_lambda",
+      "role_arn": "arn:aws:iam::543032853012:role/email-lambda-role-dev",
+      "environment_variables": {
+        "SES_FROM": "saieesh03homkhandi@gmail.com",
+        "SES_TO": "saieeshhomkhandi@gmail.com"
+      },
+      "tags": {
+        "Environment": "dev",
+        "Owner": "Saieesh",
+        "Service": "Notification"
       }
     },
     {

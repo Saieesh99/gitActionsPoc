@@ -57,7 +57,7 @@ resource "aws_iam_role_policy_attachment" "email_lambda_policy_attach" {
   ]
 }
 
-
+# ----------------- #
 
 resource "aws_iam_role" "lambda_exec_role" {
   count      = var.create_role ? 1 : 0
@@ -83,7 +83,7 @@ resource "aws_iam_role_policy_attachment" "basic_execution" {
 
 resource "aws_iam_policy" "lambda_dynamodb_policy" {
   count      = var.create_role ? 1 : 0
-  name = "lambda-dynamodb-access-policy"
+  name = "lambda-dynamodb-access-policy-${var.environment}"
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -111,4 +111,30 @@ resource "aws_iam_role_policy_attachment" "attach_lambda_dynamodb_policy" {
   count      = var.create_role ? 1 : 0
   role       = aws_iam_role.lambda_exec_role[0].name
   policy_arn = aws_iam_policy.lambda_dynamodb_policy[0].arn
+}
+
+resource "aws_iam_policy" "lambda_cloudwatch_policy" {
+  count = var.create_role ? 1 : 0
+  name = "lambda_cloudwatch_policy-${var.environment}"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_lambda_cloudwatch_policy" {
+  count      = var.create_role ? 1 : 0
+  role       = aws_iam_role.lambda_exec_role[0].name
+  policy_arn = aws_iam_policy.lambda_cloudwatch_policy[0].arn
 }
